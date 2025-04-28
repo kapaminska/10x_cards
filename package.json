@@ -1,5 +1,5 @@
 {
-  "name": "10x-astro-starter",
+  "name": "10x-cards",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -16,6 +16,7 @@
     "@astrojs/react": "4.2.2",
     "@astrojs/sitemap": "3.3.0",
     "@radix-ui/react-slot": "^1.1.2",
+    "@rollup/rollup-win32-x64-msvc": "^4.40.1",
     "@tailwindcss/vite": "4.0.17",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
