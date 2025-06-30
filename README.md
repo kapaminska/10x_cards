@@ -66,7 +66,7 @@ The project aims to provide:
 
 ## Project Status
 
-The project is currently in its MVP stage with core features under active development. Future releases will bring additional enhancements and new features.
+The project is currently in its MVP stage with core features under active development.
 
 ## License
 
