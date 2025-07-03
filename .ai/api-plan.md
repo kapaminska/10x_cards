@@ -171,7 +171,7 @@ All endpoints are prefixed with `/api`.
 #### **`POST /generations`**
 - **Description**: Initiates an AI flashcard generation process. Sends source text to the backend, which communicates with the LLM and returns a list of suggestions. This action creates a `generations` log entry.
 - **Business Logic**:
-  - The `sourceText` is hashed and checked against the `UNIQUE (user_id, source_text_hash)` constraint on the `generations` table to prevent a user from generating cards from the exact same text twice.
+  - The `sourceText` is hashed for storage purposes.
   - The `sourceText` is checked against the `source_text_length` constraint on the `generations` table to ensure it is between 1000 and 10000 characters.
   - Calls the LLM API to generate flashcard suggestions.
   - Store the generation metadata and the associate generated proposal cards.
@@ -381,6 +381,5 @@ Input validation will be performed on the server-side for all `POST` and `PATCH`
 - **Rate Limiting**:  
   - `POST /generations` – Limited to prevent excessive LLM usage (e.g., 15 requests per hour).  
   - `POST /flashcards` – Capped at 100 newly created flashcards per user per day (manual + batch). Exceeding this limit returns `429 Too Many Requests`.
-- **Unique Generation**: The backend for `POST /generations` will compute a SHA-256 hash of the `sourceText` and check the `UNIQUE (user_id, source_text_hash)` constraint on the `generations` table to prevent a user from generating cards from the exact same text twice.
 - **Error Logging**: The backend logic for `POST /generations` will automatically create an entry in the `generation_error_logs` table if the external LLM API returns an error or the process fails. These logs can be retrieved by the user via the `GET /generation-error-logs` endpoint.
 - **Generation Statistics Endpoint**: The `GET /generations/stats` endpoint calculates aggregated acceptance metrics on demand using data from the `generations` table. 

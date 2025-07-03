@@ -49,8 +49,7 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
 5.  Kontroler wywołuje metodę `generateSuggestions(sourceText, userId)`.
 6.  **Walidacja biznesowa ('generation.service')**:
     - Sprawdza długość `sourceText`. Jeśli jest nieprawidłowa, rzuca błąd (obsługiwany jako `400 Bad Request`).
-    - Oblicza hash SHA-256 z `sourceText`.
-    - Sprawdza w tabeli `generations`, czy istnieje już wpis z tym samym `userId` i `source_text_hash`. Jeśli tak, rzuca błąd (obsługiwany jako `409 Conflict`).
+    - Oblicza hash SHA-256 z `sourceText` do celów przechowywania.
 7.  **Interakcja z AI**:
     - Serwis wywołuje API LLM (np. OpenRouter) z odpowiednio przygotowanym promptem zawierającym `sourceText`. Na etapie dewelopmentu skorzystamy z mocków.
     - Mierzy czas trwania operacji.
@@ -75,7 +74,6 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
 | :--- | :--- | :--- | :--- |
 | `400` | `Bad Request` | Brak `sourceText`, nieprawidłowy typ danych, lub długość tekstu poza zakresem 1000-10000 znaków. | Zwrócenie komunikatu o błędzie walidacji. |
 | `401` | `Unauthorized` | Brak lub nieprawidłowy token uwierzytelniający. | Zwrócenie standardowego komunikatu o braku autoryzacji. |
-| `409` | `Conflict` | Użytkownik już wcześniej wygenerował fiszki z tego samego tekstu. | Zwrócenie komunikatu informującego o duplikacie. |
 | `429` | `Too Many Requests`| Użytkownik przekroczył limit szybkości generowania. | Zwrócenie komunikatu z informacją, kiedy będzie mógł spróbować ponownie. |
 | `500` | `AI Service Error` | Problem z komunikacją z usługą LLM (np. timeout, błąd sieciowy). | Zalogowanie błędu w `generation_error_logs`. Zwrócenie generycznego komunikatu. |
 | `502` | `Bad Gateway` | Usługa LLM zwróciła wewnętrzny błąd (status 5xx). | Zalogowanie błędu w `generation_error_logs`. Zwrócenie generycznego komunikatu. |
@@ -83,8 +81,8 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
 ## 8. Rozważania dotyczące wydajności:
 - **Timeout dla wywołania LLM**: 60 sekund.
 - **Asynchroniczność**: Rozważyć asynchroniczne wywołanie LLM.
-- **Hashowanie**: Obliczanie hasha SHA-256 jest szybką operacją i nie powinno stanowić wąskiego gardła.
-- **Zapytania do bazy danych**: Zapytanie o duplikaty powinno być zoptymalizowane przez indeks na kolumnach `(user_id, source_text_hash)`. Ten indeks jest już zdefiniowany w schemacie.
+- **Hashowanie**: Obliczanie hasha SHA-256 jest szybką operacją i służy do celów przechowywania.
+- **Zapytania do bazy danych**: Zapytania powinny być zoptymalizowane przez odpowiednie indeksy.
 
 ## 9. Etapy wdrożenia
 1.  **Struktura plików**:
@@ -95,7 +93,7 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
 3.  **Implementacja serwisu (`generation.service`)**:
     - Stwórz klasę `generation.service` z konstruktorem przyjmującym instancję `SupabaseClient`.
     - Zaimplementuj publiczną metodę `generateSuggestions(sourceText: string, userId: string)`.
-    - Zaimplementuj prywatne metody pomocnicze do: hashowania tekstu, sprawdzania duplikatów, wywoływania LLM i logowania błędów.
+    - Zaimplementuj prywatne metody pomocnicze do: hashowania tekstu, wywoływania LLM i logowania błędów.
 4.  **Implementacja endpointu (`/api/generations/index.ts`)**:
     - Ustaw `export const prerender = false;`.
     - Zaimplementuj handler `POST`.

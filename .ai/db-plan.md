@@ -42,7 +42,7 @@ Logs each attempt to generate flashcards using AI.
 | `id` | `uuid` | `PRIMARY KEY`, `DEFAULT gen_random_uuid()` | Unique identifier for the generation log. |
 | `user_id` | `uuid` | `NOT NULL`, `FOREIGN KEY (auth.users.id)` | References the user who initiated the generation. |
 | `model` | `varchar(100)` | `NOT NULL` | The name of the LLM used for generation. |
-| `source_text_hash`| `bytea` | `NOT NULL` | SHA-256 hash of the source text to prevent duplicates and save space. |
+| `source_text_hash`| `bytea` | `NOT NULL` | SHA-256 hash of the source text for storage and reference purposes. |
 | `source_text_length`| `integer` | `NOT NULL`, `CHECK (source_text_length BETWEEN 1000 AND 10000)` | Character count of the original source text. |
 | `generation_duration_` | `integer` | `NOT NULL` | Time taken for the LLM API to respond. |
 | `suggestions_count` | `integer` | `NOT NULL`, `CHECK (suggestions_count >= 0)` | Total number of flashcards suggested by the AI. |
@@ -50,7 +50,6 @@ Logs each attempt to generate flashcards using AI.
 | `accepted_edited_count` | `integer` | `NULLABLE`, `CHECK (accepted_edited_count >= 0)` | Count of suggestions accepted with edits. |
 | `rejected_count` | `integer` | `NULLABLE`, `CHECK (rejected_count >= 0)` | Count of suggestions rejected by the user. |
 | `created_at` | `timestamptz` | `NOT NULL`, `DEFAULT now()` | Timestamp of when the generation was initiated. |
-| **Unique Constraint** | | `UNIQUE (user_id, source_text_hash)` | A user cannot generate from the exact same text twice. |
 
 
 ### `generation_error_logs`
@@ -64,7 +63,7 @@ Logs any errors that occur during the AI generation process.
 | `error_context` | `jsonb` | | Additional context for debugging (e.g., model name, partial response). |
 | `created_at` | `timestamptz` | `NOT NULL`, `DEFAULT now()` | Timestamp of when the error occurred. |
 | `model` | `varchar(100)` | `NOT NULL` | The name of the LLM that caused the error. |
-| `source_text_hash`| `bytea` | `NOT NULL` | SHA-256 hash of the source text to prevent duplicates and save space. |
+| `source_text_hash`| `bytea` | `NOT NULL` | SHA-256 hash of the source text for storage and reference purposes. |
 | `source_text_length`| `integer` | `NOT NULL`, `CHECK (source_text_length BETWEEN 1000 AND 10000)` | Character count of the original source text. |
 
 ---
@@ -87,7 +86,6 @@ Logs any errors that occur during the AI generation process.
 | `flashcards` | `user_id` | Speeds up fetching all flashcards for a user. |
 | `flashcards` | `generation_id` | Speeds up finding flashcards from a specific generation. |
 | `generations` | `user_id` | Speeds up fetching generation history for a user. |
-| `generations` | `source_text_hash` | Part of the unique constraint, speeds up duplicate checks. |
 | `generation_error_logs` | `user_id` | Speeds up queries on user-specific errors. |
 
 ---
