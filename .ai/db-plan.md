@@ -159,4 +159,17 @@ EXECUTE PROCEDURE public.handle_updated_at();
 ```
 
 ### Spaced Repetition Algorithm
-The current schema does not include fields for a spaced repetition algorithm (e.g., `due_date`, `interval`, `ease_factor`). These will be added in a future migration once a specific algorithm (like FSRS or SM-2) is chosen. The `flashcards` table is designed to be easily extendable for this purpose. 
+The current schema does not include fields for a spaced repetition algorithm (e.g., `due_date`, `interval`, `ease_factor`). These will be added in a future migration once a specific algorithm (like FSRS or SM-2) is chosen. The `flashcards` table is designed to be easily extendable for this purpose.
+
+---
+
+## 7. Implementation Notes
+
+### Database Operations Approach
+The current implementation uses standard Supabase client operations rather than PostgreSQL RPC functions for simplicity and maintainability:
+
+- **Flashcard Creation**: Uses `supabase.from('flashcards').insert()` for batch operations
+- **Generation Stats Updates**: Uses `supabase.from('generations').update()` after successful flashcard creation
+- **Transaction Handling**: While not using database-level transactions, the implementation handles errors gracefully and logs any issues with stats updates
+
+This approach prioritizes code simplicity and easier debugging over the potential performance benefits of RPC functions. Future iterations may introduce RPC functions for complex operations that require true transactional guarantees. 

@@ -5,11 +5,8 @@ const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    `Missing Supabase environment variables. Please check your .env file in the project root.
-    Required variables: SUPABASE_URL, SUPABASE_KEY
-    Current values: SUPABASE_URL=${supabaseUrl}, SUPABASE_KEY=${supabaseAnonKey ? "[REDACTED]" : "undefined"}`
-  );
+  throw new Error(`Missing Supabase environment variables. Please check your .env file in the project root.
+    Required variables: SUPABASE_URL, SUPABASE_KEY`);
 }
 
 export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);

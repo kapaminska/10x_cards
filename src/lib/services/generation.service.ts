@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../db/database.types";
+import type { Database } from "../../db/database.types.ts";
 import type { FlashcardSuggestionDto, GenerationSuggestionsResponseDto, Json } from "../../types";
 import { logger } from "../utils";
 

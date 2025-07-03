@@ -376,10 +376,42 @@ Input validation will be performed on the server-side for all `POST` and `PATCH`
 - **`POST /generations`**:
   - `sourceText`: Required, string, length between 1000 and 10000 characters.
 
+## 4. Validation and Business Logic
+
+### 4.1. Validation
+Input validation will be performed on the server-side for all `POST` and `PATCH` requests to prevent invalid data from being processed.
+
+- **`POST /flashcards` (Manual)**:
+  - `front`: Required, string, max 200 characters.
+  - `back`: Required, string, max 500 characters.
+  - `source`: Required, must be 'manual'.
+- **`POST /flashcards` (Batch)**:
+  - `generationId`: Required, UUID format.
+  - `acceptedCards`: Required, array of objects.
+    - `front`: Required, string, max 200 characters.
+    - `back`: Required, string, max 500 characters.
+    - `source`: Required, must be 'ai-full' or 'ai-edited'.
+  - `rejectedCount`: Required, integer, >= 0.
+- **`PATCH /flashcards/:id`**:
+  - `front`: Optional, string, max 200 characters.
+  - `back`: Optional, string, max 500 characters.
+- **`POST /generations`**:
+  - `sourceText`: Required, string, length between 1000 and 10000 characters.
+
 ### 4.2. Business Logic Implementation
 - **AI Generation Statistics**: The `POST /flashcards` endpoint (when used for batch creation) is responsible for updating the `generations` table. It will use the provided `generationId` to find the corresponding record and update the `accepted_unedited_count`, `accepted_edited_count`, and `rejected_count` fields in a single transaction.
 - **Rate Limiting**:  
   - `POST /generations` – Limited to prevent excessive LLM usage (e.g., 15 requests per hour).  
   - `POST /flashcards` – Capped at 100 newly created flashcards per user per day (manual + batch). Exceeding this limit returns `429 Too Many Requests`.
 - **Error Logging**: The backend logic for `POST /generations` will automatically create an entry in the `generation_error_logs` table if the external LLM API returns an error or the process fails. These logs can be retrieved by the user via the `GET /generation-error-logs` endpoint.
-- **Generation Statistics Endpoint**: The `GET /generations/stats` endpoint calculates aggregated acceptance metrics on demand using data from the `generations` table. 
+- **Generation Statistics Endpoint**: The `GET /generations/stats` endpoint calculates aggregated acceptance metrics on demand using data from the `generations` table.
+
+### 4.3. Implementation Approach
+The current implementation prioritizes simplicity and maintainability over complex database operations:
+
+- **Database Operations**: Uses standard Supabase client operations (`insert()`, `update()`) rather than PostgreSQL RPC functions
+- **Transaction Handling**: While not using database-level transactions, the implementation handles errors gracefully and logs any issues with stats updates
+- **Error Handling**: Comprehensive error handling with proper HTTP status codes and detailed logging
+- **Validation**: Uses Zod schemas for robust input validation with custom refinements for business logic rules
+
+This approach makes the code easier to debug, test, and maintain while still providing the necessary functionality. Future iterations may introduce more sophisticated database operations as the application scales. 

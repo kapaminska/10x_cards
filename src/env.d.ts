@@ -1,13 +1,11 @@
 /// <reference types="astro/client" />
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "./db/database.types";
+type Runtime = import("@astrojs/cloudflare").Runtime<Env>;
 
-declare global {
-  namespace App {
-    interface Locals {
-      supabase: SupabaseClient<Database>;
-    }
+declare namespace App {
+  interface Locals extends Runtime {
+    supabase: import("./db/supabase.client").SupabaseClient;
+    user: import("@supabase/supabase-js").User | null;
   }
 }
 
