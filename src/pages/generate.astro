@@ -1,0 +1,10 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import GenerationContainer from "@/components/features/generation/GenerationContainer";
+---
+
+<Layout title="Generator fiszek">
+  <main class="container mx-auto py-8">
+    <GenerationContainer client:load />
+  </main>
+</Layout>
