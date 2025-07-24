@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { useGenerationManager } from "./useGenerationManager";
 import GenerationForm, { isSourceTextValid } from "./GenerationForm";
@@ -65,6 +63,7 @@ const GenerationContainer: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8 text-center">Generowanie fiszek</h1>
       <GenerationForm
         sourceText={sourceText}
         onTextChange={setSourceText}
