@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/hig/Select";
 import type { FlashcardSource } from "@/types";
 
 type SortBy = "created_at" | "updated_at";

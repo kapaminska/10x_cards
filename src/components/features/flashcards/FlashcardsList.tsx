@@ -1,7 +1,7 @@
 import type { FlashcardDTO } from "@/types";
 import FlashcardListItem from "./FlashcardListItem";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/hig/Skeleton";
+import { Button } from "@/components/hig/Button";
 
 interface FlashcardsListProps {
   flashcards: FlashcardDTO[];

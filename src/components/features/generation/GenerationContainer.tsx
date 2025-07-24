@@ -2,9 +2,9 @@ import React from "react";
 import { useGenerationManager } from "./useGenerationManager";
 import GenerationForm, { isSourceTextValid } from "./GenerationForm";
 import SuggestionsList from "./SuggestionsList";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/hig/Alert";
 import { Terminal } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/hig/Skeleton";
 
 const GenerationContainer: React.FC = () => {
   const {
@@ -63,7 +63,11 @@ const GenerationContainer: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-center">Generowanie fiszek</h1>
+      <header className="py-4 mb-6 text-center">
+        <h1 className="text-2xl font-semibold">Generator Fiszki</h1>
+        <p className="text-muted-foreground mt-1">Wklej tekst, aby automatycznie wygenerować fiszki do nauki.</p>
+      </header>
+
       <GenerationForm
         sourceText={sourceText}
         onTextChange={setSourceText}

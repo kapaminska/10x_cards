@@ -1,7 +1,7 @@
 import React from "react";
 import type { SuggestionViewModel } from "./types";
 import SuggestionCard from "./SuggestionCard";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/hig/Button";
 
 interface SuggestionsListProps {
   suggestions: SuggestionViewModel[];

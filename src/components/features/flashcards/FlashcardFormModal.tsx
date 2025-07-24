@@ -7,11 +7,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+} from "@/components/hig/Dialog";
+import { Button } from "@/components/hig/Button";
+import { Input } from "@/components/hig/Input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/hig/Form";
+import { Textarea } from "@/components/hig/Textarea";
 import type { FlashcardFormState } from "./types";
 import type { FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 import { flashcardFormSchema } from "@/lib/schemas/flashcard.schema";

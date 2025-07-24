@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { SuggestionViewModel } from "./types";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/hig/Button";
+import { Textarea } from "@/components/hig/Textarea";
 import { cn } from "@/lib/utils";
 import { Check, Edit, Trash, X, Save } from "lucide-react";
 

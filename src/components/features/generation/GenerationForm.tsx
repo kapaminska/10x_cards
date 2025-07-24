@@ -1,8 +1,6 @@
-"use client";
-
 import React from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/hig/Textarea";
+import { Button } from "@/components/hig/Button";
 
 interface GenerationFormProps {
   sourceText: string;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useFlashcards from "./useFlashcards";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/hig/Button";
 import FlashcardsList from "./FlashcardsList";
 import FlashcardFormModal from "./FlashcardFormModal";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -8,8 +8,6 @@ import type { FlashcardFormState, DeleteConfirmationState } from "./types";
 import type { FlashcardDTO } from "@/types";
 import type { FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 import { Toaster, toast } from "sonner";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import FilterSortControls from "./FilterSortControls";
 
 const FlashcardsView = () => {
@@ -90,37 +88,32 @@ const FlashcardsView = () => {
   return (
     <>
       <Toaster richColors />
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle>Moje Fiszki</CardTitle>
-              <CardDescription>Zarządzaj swoją kolekcją fiszek.</CardDescription>
-            </div>
-            <Button onClick={handleOpenCreateModal}>Stwórz nową fiszkę</Button>
-          </div>
-        </CardHeader>
-        <Separator />
-        <CardContent className="pt-6">
-          <div className="mb-4">
-            <FilterSortControls
-              filterSource={filters.source || "all"}
-              onFilterSourceChange={(source) => setFilters({ ...filters, source })}
-              sortBy={sorting.sortBy}
-              onSortByChange={(sortBy) => setSorting({ ...sorting, sortBy })}
-            />
-          </div>
 
-          {error && <p className="text-red-500">Błąd: {error}</p>}
+      <header className="flex justify-between items-center py-4 mb-6 border-b">
+        <div>
+          <h1 className="text-2xl font-semibold">Moje Fiszki</h1>
+          <p className="text-muted-foreground mt-1">Zarządzaj swoją kolekcją fiszek.</p>
+        </div>
+        <Button onClick={handleOpenCreateModal}>Stwórz nową fiszkę</Button>
+      </header>
 
-          <FlashcardsList
-            flashcards={flashcards}
-            isLoading={isLoading}
-            onEdit={handleOpenEditModal}
-            onDelete={handleOpenDeleteDialog}
-          />
-        </CardContent>
-      </Card>
+      <div className="mb-6">
+        <FilterSortControls
+          filterSource={filters.source || "all"}
+          onFilterSourceChange={(source) => setFilters({ ...filters, source })}
+          sortBy={sorting.sortBy}
+          onSortByChange={(sortBy) => setSorting({ ...sorting, sortBy })}
+        />
+      </div>
+
+      {error && <p className="text-red-500">Błąd: {error}</p>}
+
+      <FlashcardsList
+        flashcards={flashcards}
+        isLoading={isLoading}
+        onEdit={handleOpenEditModal}
+        onDelete={handleOpenDeleteDialog}
+      />
 
       <FlashcardFormModal state={formState} onClose={handleCloseModals} onSubmit={handleFormSubmit} />
       <ConfirmationDialog state={deleteState} onClose={handleCloseModals} onConfirm={handleDeleteConfirm} />

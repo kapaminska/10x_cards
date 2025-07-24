@@ -1,13 +1,12 @@
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/hig/Dialog";
+import { Button } from "@/components/hig/Button";
 import type { DeleteConfirmationState } from "./types";
 
 interface ConfirmationDialogProps {
@@ -18,24 +17,24 @@ interface ConfirmationDialogProps {
 
 const ConfirmationDialog = ({ state, onClose, onConfirm }: ConfirmationDialogProps) => {
   return (
-    <AlertDialog open={state.isOpen} onOpenChange={onClose}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Czy jesteś pewien?</AlertDialogTitle>
-          <AlertDialogDescription>
+    <Dialog open={state.isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Czy jesteś pewien?</DialogTitle>
+          <DialogDescription>
             Tej operacji nie można cofnąć. Fiszka zostanie trwale usunięta z Twojej kolekcji.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose} disabled={state.isConfirming}>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={state.isConfirming}>
             Anuluj
-          </AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} disabled={state.isConfirming}>
+          </Button>
+          <Button variant="destructive" onClick={onConfirm} disabled={state.isConfirming}>
             {state.isConfirming ? "Usuwanie..." : "Usuń"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

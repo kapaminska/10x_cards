@@ -1,6 +1,6 @@
 import type { FlashcardDTO } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/hig/Button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/hig/Card";
 import { format } from "date-fns";
 
 interface FlashcardListItemProps {
