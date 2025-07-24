@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import type { FlashcardsViewState } from "./types";
-import type { FlashcardsListResponse } from "@/types";
+import type { FlashcardsListResponse, FlashcardSource } from "@/types";
 import type { FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 
 const useFlashcards = () => {
@@ -14,10 +14,11 @@ const useFlashcards = () => {
     },
     isLoading: true,
     error: null,
-    filters: {},
+    filters: {
+      source: "all",
+    },
     sorting: {
       sortBy: "created_at",
-      order: "desc",
     },
   });
 
@@ -28,8 +29,12 @@ const useFlashcards = () => {
         page: state.pagination.page.toString(),
         limit: state.pagination.limit.toString(),
         sort: state.sorting.sortBy,
-        order: state.sorting.order,
+        order: "desc",
       });
+
+      if (state.filters.source && state.filters.source !== "all") {
+        params.append("source", state.filters.source);
+      }
 
       const response = await fetch(`/api/flashcards?${params.toString()}`);
       if (!response.ok) {
@@ -45,7 +50,7 @@ const useFlashcards = () => {
     } catch (error) {
       setState((s) => ({ ...s, isLoading: false, error: (error as Error).message }));
     }
-  }, [state.pagination.page, state.pagination.limit, state.sorting.sortBy, state.sorting.order]);
+  }, [state.pagination.page, state.pagination.limit, state.sorting.sortBy, state.filters.source]);
 
   const createFlashcard = async (formData: FlashcardFormData) => {
     const response = await fetch("/api/flashcards", {
@@ -90,11 +95,11 @@ const useFlashcards = () => {
     await fetchFlashcards();
   };
 
-  const setFilters = (filters: FlashcardsViewState["filters"]) => {
-    setState((s) => ({ ...s, filters }));
+  const setFilters = (filters: { source: FlashcardSource | "all" }) => {
+    setState((s) => ({ ...s, filters, pagination: { ...s.pagination, page: 1 } }));
   };
-  const setSorting = (sorting: FlashcardsViewState["sorting"]) => {
-    setState((s) => ({ ...s, sorting }));
+  const setSorting = (sorting: { sortBy: "created_at" | "updated_at" }) => {
+    setState((s) => ({ ...s, sorting, pagination: { ...s.pagination, page: 1 } }));
   };
   const setPage = (page: number) => {
     setState((s) => ({ ...s, pagination: { ...s.pagination, page } }));

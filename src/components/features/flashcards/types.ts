@@ -7,11 +7,10 @@ export interface FlashcardsViewState {
   isLoading: boolean;
   error: string | null;
   filters: {
-    source?: FlashcardSource;
+    source: FlashcardSource | "all";
   };
   sorting: {
     sortBy: "created_at" | "updated_at";
-    order: "asc" | "desc";
   };
 }
 

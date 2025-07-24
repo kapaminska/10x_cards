@@ -10,7 +10,7 @@ interface FlashcardListItemProps {
 }
 
 const FlashcardListItem = ({ flashcard, onEdit, onDelete }: FlashcardListItemProps) => {
-  const formattedDate = flashcard.createdAt ? format(new Date(flashcard.createdAt), "dd.MM.yyyy") : "Brak daty";
+  const formattedDate = flashcard.createdAt ? format(flashcard.createdAt, "dd.MM.yyyy") : "Brak daty";
 
   return (
     <Card>

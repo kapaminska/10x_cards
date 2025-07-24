@@ -10,10 +10,22 @@ import type { FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 import { Toaster, toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import FilterSortControls from "./FilterSortControls";
 
 const FlashcardsView = () => {
-  const { flashcards, isLoading, error, fetchFlashcards, createFlashcard, updateFlashcard, deleteFlashcard } =
-    useFlashcards();
+  const {
+    flashcards,
+    isLoading,
+    error,
+    filters,
+    sorting,
+    fetchFlashcards,
+    createFlashcard,
+    updateFlashcard,
+    deleteFlashcard,
+    setFilters,
+    setSorting,
+  } = useFlashcards();
 
   const [formState, setFormState] = useState<FlashcardFormState>({
     isOpen: false,
@@ -90,8 +102,14 @@ const FlashcardsView = () => {
         </CardHeader>
         <Separator />
         <CardContent className="pt-6">
-          {/* TODO: Implement FilterSortControls */}
-          <div className="mb-4">FilterSortControls Placeholder</div>
+          <div className="mb-4">
+            <FilterSortControls
+              filterSource={filters.source || "all"}
+              onFilterSourceChange={(source) => setFilters({ ...filters, source })}
+              sortBy={sorting.sortBy}
+              onSortByChange={(sortBy) => setSorting({ ...sorting, sortBy })}
+            />
+          </div>
 
           {error && <p className="text-red-500">Błąd: {error}</p>}
 
