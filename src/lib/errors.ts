@@ -16,3 +16,41 @@ export class ServiceError extends Error {
     this.code = code;
   }
 }
+
+export class OpenRouterError extends ServiceError {
+  constructor(message: string) {
+    super("Internal Server Error", message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class AuthenticationError extends OpenRouterError {
+  constructor(message: string) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class RateLimitError extends OpenRouterError {
+  constructor(message: string) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class BadRequestError extends OpenRouterError {
+  constructor(message: string) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
+export class OutputValidationError extends OpenRouterError {
+  public readonly originalError?: Error;
+
+  constructor(message: string, originalError?: Error) {
+    super(message);
+    this.name = this.constructor.name;
+    this.originalError = originalError;
+  }
+}

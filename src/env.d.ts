@@ -6,6 +6,7 @@ declare namespace App {
   interface Locals extends Runtime {
     supabase: import("./db/supabase.client").SupabaseClient;
     user: import("@supabase/supabase-js").User | null;
+    openRouterApiKey: string;
   }
 }
 

@@ -2,12 +2,18 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types.ts";
 import type { FlashcardSuggestionDto, GenerationSuggestionsResponseDto, Json } from "../../types";
 import { logger } from "../utils";
+import { OpenRouterService } from "./openrouter.service.ts";
+import { flashcardsListSchema } from "../schemas/generation.schema.ts";
 
 /**
  * Service for handling flashcard generation using AI
  */
 export class GenerationService {
-  constructor(private supabase: SupabaseClient<Database>) {}
+  private openRouterService: OpenRouterService;
+
+  constructor(private supabase: SupabaseClient<Database>) {
+    this.openRouterService = new OpenRouterService();
+  }
 
   /**
    * Main method to generate flashcard suggestions
@@ -42,7 +48,7 @@ export class GenerationService {
         sourceTextLength: sourceText.length,
         suggestionsCount: suggestions.length,
         generationDurationMs,
-        model: "mock-ai-model-v1", // TODO: Replace with actual model name
+        model: this.openRouterService.DEFAULT_MODEL,
       });
 
       logger.info(
@@ -67,7 +73,7 @@ export class GenerationService {
           sourceTextLength: sourceText.length,
           errorMessage: error.message,
           errorContext: error.context as Json,
-          model: "mock-ai-model-v1",
+          model: this.openRouterService.DEFAULT_MODEL,
         });
       }
       throw error;
@@ -98,36 +104,29 @@ export class GenerationService {
   }
 
   /**
-   * Calls AI service to generate flashcard suggestions (mocked)
+   * Calls AI service to generate flashcard suggestions
    */
   private async callAIService(sourceText: string): Promise<FlashcardSuggestionDto[]> {
-    // TODO: Replace with actual AI service call using sourceText
-    // Currently mocked - will process sourceText in real implementation
-    void sourceText; // Suppress unused parameter warning
+    const prompt = `Wygeneruj listę fiszek na podstawie poniższego tekstu. Tekst jest długi, więc skup się na wyciągnięciu najważniejszych informacji, kluczowych definicji, istotnych dat, nazwisk lub fundamentalnych koncepcji. Stwórz od 5 do 15 fiszek.
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+Tekst źródłowy:
+---
+${sourceText}
+---
+`;
+    const systemPrompt =
+      "Jesteś ekspertem w tworzeniu zwięzłych i wartościowych fiszek edukacyjnych. Zawsze odpowiadaj w formacie JSON, zgodnie z podanym schematem. Nie dodawaj żadnych dodatkowych wyjaśnień poza formatem JSON.";
 
-    // Mock response - in production this would be the actual AI call
-    const mockSuggestions: FlashcardSuggestionDto[] = [
-      {
-        front: "What is the main concept discussed in the provided text?",
-        back: "The main concept is extracted from the source material and presented as a concise answer.",
+    try {
+      const result = await this.openRouterService.getStructuredResponse(prompt, flashcardsListSchema, systemPrompt);
+      return result.flashcards.map((card) => ({
+        ...card,
         source: "ai-full",
-      },
-      {
-        front: "What are the key points mentioned in the source text?",
-        back: "Key points include the essential information that was highlighted in the original material.",
-        source: "ai-full",
-      },
-      {
-        front: "How does this topic relate to broader concepts?",
-        back: "This topic connects to wider themes and principles within the subject area.",
-        source: "ai-full",
-      },
-    ];
-
-    return mockSuggestions;
+      }));
+    } catch (error) {
+      // Wrap OpenRouterService errors into AIServiceError for consistent handling
+      throw new AIServiceError("Failed to generate suggestions from AI service", error);
+    }
   }
 
   /**
