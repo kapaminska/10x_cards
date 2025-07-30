@@ -16,6 +16,7 @@ All endpoints are prefixed with `/api`.
 ### 2.1. Flashcards
 
 #### **`GET /flashcards`**
+
 - **Description**: Retrieves a paginated list of the authenticated user's flashcards.
 - **Query Parameters**:
   - `page` (number, optional, default: 1): The page number for pagination.
@@ -51,6 +52,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`POST /flashcards`**
+
 - **Description**: Creates one or more flashcards for the authenticated user. Handles two distinct cases:
   1.  **Manual Creation**: The request body is a single object for one flashcard. The `source` is implicitly 'manual' if omitted.
   2.  **AI-Generated Batch Creation**: The request body is an object containing the `generationId` and arrays of accepted/rejected cards, conforming to the `CreateFlashcardsBatchCommand` type.
@@ -112,6 +114,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`GET /flashcards/:id`**
+
 - **Description**: Retrieves a single flashcard by its ID.
 - **Success Response (200 OK)**:
   ```json
@@ -133,6 +136,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`PUT /flashcards/:id`**
+
 - **Description**: Updates an existing flashcard.
 - **Request Body**: Fields to update.
   ```json
@@ -156,6 +160,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`DELETE /flashcards/:id`**
+
 - **Description**: Deletes a flashcard by its ID.
 - **Success Response (204 No Content)**:
   - An empty body is returned on successful deletion.
@@ -169,6 +174,7 @@ All endpoints are prefixed with `/api`.
 ### 2.2. Generations
 
 #### **`POST /generations`**
+
 - **Description**: Initiates an AI flashcard generation process. Sends source text to the backend, which communicates with the LLM and returns a list of suggestions. This action creates a `generations` log entry.
 - **Business Logic**:
   - The `sourceText` is hashed for storage purposes.
@@ -210,6 +216,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`GET /generations`**
+
 - **Description**: Retrieves a paginated list of the authenticated user's generation logs.
 - **Query Parameters**:
   - `page` (number, optional, default: 1): The page number for pagination.
@@ -246,6 +253,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`GET /generations/:id`**
+
 - **Description**: Retrieves details of a specific generation log.
 - **Success Response (200 OK)**:
   ```json
@@ -269,6 +277,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`GET /generations/stats`**
+
 - **Description**: Returns aggregated statistics across all generation logs for the authenticated user.
 - **Query Parameters**:
   - `period` (string, optional, default: 'overall'): Aggregation period ('overall', 'daily', 'monthly').
@@ -291,6 +300,7 @@ All endpoints are prefixed with `/api`.
 ### 2.3. Generation Error Logs
 
 #### **`GET /generation-error-logs`**
+
 - **Description**: Retrieves a paginated list of the authenticated user's generation errors.
 - **Query Parameters**:
   - `page` (number, optional, default: 1): The page number for pagination.
@@ -324,6 +334,7 @@ All endpoints are prefixed with `/api`.
 ---
 
 #### **`GET /generation-error-logs/:id`**
+
 - **Description**: Retrieves details of a specific generation error log.
 - **Success Response (200 OK)**:
   ```json
@@ -357,6 +368,7 @@ All endpoints are prefixed with `/api`.
 ## 4. Validation and Business Logic
 
 ### 4.1. Validation
+
 Input validation will be performed on the server-side for all `POST` and `PATCH` requests to prevent invalid data from being processed.
 
 - **`POST /flashcards` (Manual)**:
@@ -379,6 +391,7 @@ Input validation will be performed on the server-side for all `POST` and `PATCH`
 ## 4. Validation and Business Logic
 
 ### 4.1. Validation
+
 Input validation will be performed on the server-side for all `POST` and `PATCH` requests to prevent invalid data from being processed.
 
 - **`POST /flashcards` (Manual)**:
@@ -399,14 +412,16 @@ Input validation will be performed on the server-side for all `POST` and `PATCH`
   - `sourceText`: Required, string, length between 1000 and 10000 characters.
 
 ### 4.2. Business Logic Implementation
+
 - **AI Generation Statistics**: The `POST /flashcards` endpoint (when used for batch creation) is responsible for updating the `generations` table. It will use the provided `generationId` to find the corresponding record and update the `accepted_unedited_count`, `accepted_edited_count`, and `rejected_count` fields in a single transaction.
-- **Rate Limiting**:  
-  - `POST /generations` – Limited to prevent excessive LLM usage (e.g., 15 requests per hour).  
+- **Rate Limiting**:
+  - `POST /generations` – Limited to prevent excessive LLM usage (e.g., 15 requests per hour).
   - `POST /flashcards` – Capped at 100 newly created flashcards per user per day (manual + batch). Exceeding this limit returns `429 Too Many Requests`.
 - **Error Logging**: The backend logic for `POST /generations` will automatically create an entry in the `generation_error_logs` table if the external LLM API returns an error or the process fails. These logs can be retrieved by the user via the `GET /generation-error-logs` endpoint.
 - **Generation Statistics Endpoint**: The `GET /generations/stats` endpoint calculates aggregated acceptance metrics on demand using data from the `generations` table.
 
 ### 4.3. Implementation Approach
+
 The current implementation prioritizes simplicity and maintainability over complex database operations:
 
 - **Database Operations**: Uses standard Supabase client operations (`insert()`, `update()`) rather than PostgreSQL RPC functions
@@ -414,4 +429,4 @@ The current implementation prioritizes simplicity and maintainability over compl
 - **Error Handling**: Comprehensive error handling with proper HTTP status codes and detailed logging
 - **Validation**: Uses Zod schemas for robust input validation with custom refinements for business logic rules
 
-This approach makes the code easier to debug, test, and maintain while still providing the necessary functionality. Future iterations may introduce more sophisticated database operations as the application scales. 
+This approach makes the code easier to debug, test, and maintain while still providing the necessary functionality. Future iterations may introduce more sophisticated database operations as the application scales.

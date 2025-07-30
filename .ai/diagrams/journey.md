@@ -1,5 +1,5 @@
 stateDiagram-v2
-    direction LR
+direction LR
 
     [*] --> Niezalogowany
 
@@ -26,7 +26,7 @@ stateDiagram-v2
         FormularzEmail --> WysłanoLink: Podano e-mail
         WysłanoLink --> Niezalogowany: Użytkownik wraca do logowania
     }
-    
+
     Zalogowany: Użytkownik w aplikacji
     note right of Zalogowany
         - Dostęp do chronionych stron

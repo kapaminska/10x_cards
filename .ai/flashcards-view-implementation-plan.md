@@ -7,6 +7,7 @@ Widok "Moje Fiszki" jest głównym interfejsem dla zalogowanego użytkownika do 
 ## 2. Routing widoku
 
 Widok będzie dostępny pod następującą ścieżką:
+
 - **Ścieżka**: `/flashcards`
 - **Plik**: `src/pages/flashcards.astro`
 
@@ -36,65 +37,71 @@ FlashcardsView (Komponent główny)
 ## 4. Szczegóły komponentów
 
 ### FlashcardsView
+
 - **Opis**: Główny kontener dla widoku. Orkiestruje stanem, obsługuje logikę biznesową (otwieranie modali, wywoływanie akcji API) i renderuje komponenty podrzędne.
 - **Główne elementy**: Przycisk do tworzenia nowej fiszki, komponenty `FilterSortControls`, `FlashcardsList`, `FlashcardFormModal`, `ConfirmationDialog`.
 - **Obsługiwane interakcje**:
-    - Otwarcie modalu tworzenia fiszki.
-    - Otwarcie modalu edycji fiszki (przekazując dane).
-    - Otwarcie modalu potwierdzenia usunięcia (przekazując ID fiszki).
-    - Przekazywanie zmian filtrów i sortowania do logiki zarządzającej stanem.
+  - Otwarcie modalu tworzenia fiszki.
+  - Otwarcie modalu edycji fiszki (przekazując dane).
+  - Otwarcie modalu potwierdzenia usunięcia (przekazując ID fiszki).
+  - Przekazywanie zmian filtrów i sortowania do logiki zarządzającej stanem.
 - **Typy**: `FlashcardDTO`, `FlashcardsViewState`, `FlashcardFormState`, `DeleteConfirmationState`.
 - **Propsy**: Brak.
 
 ### FlashcardsList
+
 - **Opis**: Wyświetla listę fiszek, stan ładowania lub stan pusty.
 - **Główne elementy**: Warunkowo renderuje komponent `Skeleton` (podczas ładowania), komunikat o pustym stanie lub mapuje listę fiszek na komponenty `FlashcardListItem`.
 - **Obsługiwane interakcje**: Propaguje zdarzenia `onEdit` i `onDelete` od dzieci do `FlashcardsView`.
 - **Typy**: `FlashcardDTO`.
 - **Propsy**:
-    - `flashcards: FlashcardDTO[]`
-    - `isLoading: boolean`
-    - `onEdit: (flashcard: FlashcardDTO) => void`
-    - `onDelete: (flashcardId: string) => void`
+  - `flashcards: FlashcardDTO[]`
+  - `isLoading: boolean`
+  - `onEdit: (flashcard: FlashcardDTO) => void`
+  - `onDelete: (flashcardId: string) => void`
 
 ### FlashcardListItem
+
 - **Opis**: Reprezentuje pojedynczą fiszkę na liście. Wyświetla jej treść i przyciski akcji.
 - **Główne elementy**: Komponent `Card` z Shadcn/ui do wizualnego oddzielenia, wyświetlenie pól `front` i `back`, przyciski "Edytuj" i "Usuń".
 - **Obsługiwane interakcje**: Kliknięcie przycisków "Edytuj" i "Usuń".
 - **Typy**: `FlashcardDTO`.
 - **Propsy**:
-    - `flashcard: FlashcardDTO`
-    - `onEdit: (flashcard: FlashcardDTO) => void`
-    - `onDelete: (flashcardId: string) => void`
+  - `flashcard: FlashcardDTO`
+  - `onEdit: (flashcard: FlashcardDTO) => void`
+  - `onDelete: (flashcardId: string) => void`
 
 ### FlashcardFormModal
+
 - **Opis**: Modal do tworzenia i edycji fiszki, wykorzystujący `react-hook-form` do zarządzania formularzem i walidacją.
 - **Główne elementy**: `Dialog` z Shadcn/ui, pola `Input` (`front`) i `Textarea` (`back`), przycisk zapisu i zamknięcia.
 - **Obsługiwane interakcje**: Wprowadzanie tekstu, submisja formularza.
 - **Warunki walidacji**:
-    - `front`: Wymagane, maksymalnie 200 znaków.
-    - `back`: Wymagane, maksymalnie 500 znaków.
+  - `front`: Wymagane, maksymalnie 200 znaków.
+  - `back`: Wymagane, maksymalnie 500 znaków.
 - **Typy**: `FlashcardDTO`, `UpdateFlashcardCommand`, `FlashcardFormState`.
 - **Propsy**:
-    - `state: FlashcardFormState`
-    - `onClose: () => void`
-    - `onSubmit: (data: UpdateFlashcardCommand) => void`
+  - `state: FlashcardFormState`
+  - `onClose: () => void`
+  - `onSubmit: (data: UpdateFlashcardCommand) => void`
 
 ### ConfirmationDialog
+
 - **Opis**: Prosty modal do potwierdzenia operacji usunięcia fiszki.
 - **Główne elementy**: `AlertDialog` z Shadcn/ui z tytułem, opisem i przyciskami "Potwierdź" i "Anuluj".
 - **Obsługiwane interakcje**: Kliknięcie przycisku "Potwierdź" lub "Anuluj".
 - **Typy**: `DeleteConfirmationState`.
 - **Propsy**:
-    - `state: DeleteConfirmationState`
-    - `onClose: () => void`
-    - `onConfirm: () => void`
+  - `state: DeleteConfirmationState`
+  - `onClose: () => void`
+  - `onConfirm: () => void`
 
 ## 5. Typy
 
 Do implementacji widoku wykorzystane zostaną istniejące typy DTO oraz zdefiniowane zostaną nowe typy ViewModel do zarządzania stanem UI.
 
 ### Istniejące typy (z `src/types.ts`)
+
 - `FlashcardDTO`: Obiekt fiszki otrzymywany z API.
 - `FlashcardCreateDto`: Payload dla `POST /flashcards`.
 - `UpdateFlashcardCommand`: Payload dla `PUT /flashcards/:id`.
@@ -102,6 +109,7 @@ Do implementacji widoku wykorzystane zostaną istniejące typy DTO oraz zdefinio
 - `FlashcardSource`: Enum dla źródła fiszki.
 
 ### Nowe typy ViewModel
+
 ```typescript
 // Stan całego widoku, zarządzany przez custom hooka
 interface FlashcardsViewState {
@@ -113,14 +121,14 @@ interface FlashcardsViewState {
     source?: FlashcardSource;
   };
   sorting: {
-    sortBy: 'created_at' | 'updated_at';
-    order: 'asc' | 'desc';
+    sortBy: "created_at" | "updated_at";
+    order: "asc" | "desc";
   };
 }
 
 // Stan modalu formularza
 interface FlashcardFormState {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   isOpen: boolean;
   isSubmitting: boolean;
   // Dane do pre-populacji formularza w trybie edycji
@@ -141,33 +149,34 @@ interface DeleteConfirmationState {
 Zalecane jest stworzenie customowego hooka `useFlashcards`, który będzie enkapsulował całą logikę zarządzania stanem i interakcji z API.
 
 ### `useFlashcards` hook:
+
 - **Cel**: Centralizacja logiki pobierania, tworzenia, aktualizacji i usuwania fiszek, a także zarządzanie stanami ładowania, błędów, paginacji, filtrowania i sortowania.
 - **Zarządzany stan**: `FlashcardsViewState`.
 - **Eksponowane funkcje**:
-    - `fetchFlashcards(params)`: Pobiera dane z API.
-    - `createFlashcard(data)`: Wysyła żądanie `POST`.
-    - `updateFlashcard(id, data)`: Wysyła żądanie `PUT`.
-    - `deleteFlashcard(id)`: Wysyła żądanie `DELETE`.
-    - `setFilters(filters)`: Aktualizuje filtry i wywołuje ponowne pobranie danych.
-    - `setSorting(sorting)`: Aktualizuje sortowanie i wywołuje ponowne pobranie danych.
-    - `setPage(page)`: Ustawia nową stronę i wywołuje ponowne pobranie danych.
+  - `fetchFlashcards(params)`: Pobiera dane z API.
+  - `createFlashcard(data)`: Wysyła żądanie `POST`.
+  - `updateFlashcard(id, data)`: Wysyła żądanie `PUT`.
+  - `deleteFlashcard(id)`: Wysyła żądanie `DELETE`.
+  - `setFilters(filters)`: Aktualizuje filtry i wywołuje ponowne pobranie danych.
+  - `setSorting(sorting)`: Aktualizuje sortowanie i wywołuje ponowne pobranie danych.
+  - `setPage(page)`: Ustawia nową stronę i wywołuje ponowne pobranie danych.
 
 ## 7. Integracja API
 
 Komponenty będą komunikować się z API za pośrednictwem funkcji udostępnianych przez hook `useFlashcards`.
 
 - **`GET /flashcards`**: Wywoływane przy inicjalizacji widoku oraz przy każdej zmianie paginacji, sortowania lub filtrów.
-    - **Żądanie**: Parametry query: `page`, `limit`, `sort`, `order`, `source`.
-    - **Odpowiedź**: `PaginatedResponse<FlashcardDTO>`.
+  - **Żądanie**: Parametry query: `page`, `limit`, `sort`, `order`, `source`.
+  - **Odpowiedź**: `PaginatedResponse<FlashcardDTO>`.
 - **`POST /flashcards`**: Wywoływane po zatwierdzeniu formularza tworzenia nowej fiszki.
-    - **Żądanie**: `FlashcardCreateDto`.
-    - **Odpowiedź**: `{ flashcards: FlashcardDTO[] }`.
+  - **Żądanie**: `FlashcardCreateDto`.
+  - **Odpowiedź**: `{ flashcards: FlashcardDTO[] }`.
 - **`PUT /flashcards/:id`**: Wywoływane po zatwierdzeniu formularza edycji istniejącej fiszki.
-    - **Żądanie**: `UpdateFlashcardCommand`.
-    - **Odpowiedź**: `FlashcardDTO`.
+  - **Żądanie**: `UpdateFlashcardCommand`.
+  - **Odpowiedź**: `FlashcardDTO`.
 - **`DELETE /flashcards/:id`**: Wywoływane po potwierdzeniu usunięcia fiszki.
-    - **Żądanie**: Brak body.
-    - **Odpowiedź**: `204 No Content`.
+  - **Żądanie**: Brak body.
+  - **Odpowiedź**: `204 No Content`.
 
 ## 8. Interakcje użytkownika
 
@@ -179,10 +188,10 @@ Komponenty będą komunikować się z API za pośrednictwem funkcji udostępnian
 
 - **Komponent**: `FlashcardFormModal`.
 - **Warunki**:
-    - Pole `front` nie może być puste.
-    - Długość pola `front` nie może przekraczać 200 znaków.
-    - Pole `back` nie może być puste.
-    - Długość pola `back` nie może przekraczać 500 znaków.
+  - Pole `front` nie może być puste.
+  - Długość pola `front` nie może przekraczać 200 znaków.
+  - Pole `back` nie może być puste.
+  - Długość pola `back` nie może przekraczać 500 znaków.
 - **Weryfikacja**: Zostanie zaimplementowana po stronie klienta za pomocą biblioteki `zod` i `react-hook-form`. Błędy walidacji będą wyświetlane pod odpowiednimi polami formularza, a przycisk "Zapisz" będzie nieaktywny, jeśli formularz jest niepoprawny lub w trakcie wysyłania.
 
 ## 10. Obsługa błędów
@@ -201,4 +210,4 @@ Komponenty będą komunikować się z API za pośrednictwem funkcji udostępnian
 6.  **Integracja**: Połączenie wszystkich komponentów w `FlashcardsView`, przekazanie propsów i obsługa zdarzeń.
 7.  **Obsługa błędów i stanów brzegowych**: Implementacja logiki wyświetlania stanu ładowania (szkielety), błędów (komunikaty, toasty) oraz stanu pustego.
 8.  **Stylowanie**: Dopracowanie wyglądu za pomocą Tailwind CSS zgodnie z ogólnym designem aplikacji.
-9.  **Testowanie manualne**: Weryfikacja wszystkich ścieżek użytkownika: tworzenie, edycja, usuwanie, filtrowanie, sortowanie oraz obsługa błędów. 
+9.  **Testowanie manualne**: Weryfikacja wszystkich ścieżek użytkownika: tworzenie, edycja, usuwanie, filtrowanie, sortowanie oraz obsługa błędów.

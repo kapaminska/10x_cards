@@ -9,6 +9,9 @@
 - **Frontend:** Astro 5, React 19, TypeScript 5, Tailwind 4, Shadcn/ui
 - **Backend:** Supabase (PostgreSQL, Authentication)
 - **AI Integration:** Openrouter.ai for LLM interactions
+- **Testing:**
+  - **Unit & Component Integration:** Vitest, React Testing Library
+  - **End-to-End, API & Security:** Playwright
 - **CI/CD and Hosting:** GitHub Actions and DigitalOcean
 
 ## Getting Started Locally
@@ -53,6 +56,9 @@
 - **lint:** `eslint .` - Runs the linter.
 - **lint:fix:** `eslint . --fix` - Runs the linter and fixes issues.
 - **format:** `prettier --write .` - Formats the codebase.
+- **test:unit:** `vitest` - Runs unit and component tests.
+- **test:e2e:** `playwright test` - Runs end-to-end tests.
+- **test:** `npm run test:unit && npm run test:e2e` - Runs all tests.
 
 ## Project Scope
 

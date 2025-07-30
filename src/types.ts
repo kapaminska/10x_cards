@@ -6,7 +6,7 @@
 // Helper aliases & utilities
 // ----------------------------------------------------------------------------------
 
-import type { Database, Json } from './db/database.types';
+import type { Database, Json } from "./db/database.types";
 
 // Generic helper that flattens intersection types for better autocomplete
 // (taken from https://github.com/sindresorhus/type-fest#simplify).
@@ -14,13 +14,13 @@ export type Simplify<T> = { [K in keyof T]: T[K] } & {};
 
 // Re-export the enum for convenience so that the frontend does not need to reach
 // for deeply-nested locations.
-export type FlashcardSource = Database['public']['Enums']['flashcard_source'];
+export type FlashcardSource = Database["public"]["Enums"]["flashcard_source"];
 
 // Entity helpers (database rows)
-export type FlashcardInsert = Database['public']['Tables']['flashcards']['Insert'];
-export type FlashcardRow = Database['public']['Tables']['flashcards']['Row'];
-export type GenerationRow = Database['public']['Tables']['generations']['Row'];
-export type GenerationErrorLogRow = Database['public']['Tables']['generation_error_logs']['Row'];
+export type FlashcardInsert = Database["public"]["Tables"]["flashcards"]["Insert"];
+export type FlashcardRow = Database["public"]["Tables"]["flashcards"]["Row"];
+export type GenerationRow = Database["public"]["Tables"]["generations"]["Row"];
+export type GenerationErrorLogRow = Database["public"]["Tables"]["generation_error_logs"]["Row"];
 
 // ----------------------------------------------------------------------------------
 // Generic response / pagination helpers
@@ -42,13 +42,14 @@ export interface PaginatedResponse<T> {
 // Flashcards
 // ----------------------------------------------------------------------------------
 
-export interface FlashcardDTO extends Simplify<
-  Pick<FlashcardRow, 'id' | 'front' | 'back' | 'source'> & {
-    generationId: FlashcardRow['generation_id'];
-    createdAt: FlashcardRow['created_at'];
-    updatedAt: FlashcardRow['updated_at'];
-  }
-> {}
+export interface FlashcardDTO
+  extends Simplify<
+    Pick<FlashcardRow, "id" | "front" | "back" | "source"> & {
+      generationId: FlashcardRow["generation_id"];
+      createdAt: FlashcardRow["created_at"];
+      updatedAt: FlashcardRow["updated_at"];
+    }
+  > {}
 
 // Create (manual) -------------------------------------------------------------------
 export interface CreateFlashcardCommand {
@@ -60,14 +61,14 @@ export interface CreateFlashcardCommand {
    * Explicitly allow the client to send the source field; the backend will
    * coerce it to "manual" if omitted.
    */
-  source?: Extract<FlashcardSource, 'manual'>;
+  source?: Extract<FlashcardSource, "manual">;
 }
 
 // Batch create (AI) -----------------------------------------------------------------
 export interface CreateAIGeneratedFlashcard {
   front: string;
   back: string;
-  source: Extract<FlashcardSource, 'ai-full' | 'ai-edited'>;
+  source: Extract<FlashcardSource, "ai-full" | "ai-edited">;
 }
 
 export interface CreateFlashcardsBatchCommand {
@@ -80,9 +81,7 @@ export interface CreateFlashcardsBatchCommand {
 }
 
 // Update ---------------------------------------------------------------------------
-export type UpdateFlashcardCommand = Partial<
-  Pick<FlashcardDTO, 'front' | 'back' | 'source'>
->;
+export type UpdateFlashcardCommand = Partial<Pick<FlashcardDTO, "front" | "back" | "source">>;
 
 // List / Pagination ----------------------------------------------------------------
 export type FlashcardsListResponse = PaginatedResponse<FlashcardDTO>;
@@ -97,7 +96,7 @@ export type FlashcardsListResponse = PaginatedResponse<FlashcardDTO>;
  *   and `generationId` **must be provided**.
  */
 export type FlashcardCreateDto = Simplify<
-  Pick<FlashcardInsert, 'front' | 'back'> & {
+  Pick<FlashcardInsert, "front" | "back"> & {
     source: FlashcardSource;
     generationId?: string | null;
   }
@@ -110,7 +109,7 @@ export type FlashcardCreateDto = Simplify<
 export interface FlashcardSuggestion {
   front: string;
   back: string;
-  source: 'ai-full';
+  source: "ai-full";
 }
 
 // Alias preserving naming convention with the DTO suffix
@@ -125,24 +124,25 @@ export interface CreateGenerationCommand {
 export type GenerateFlashcardsCommand = CreateGenerationCommand;
 
 export interface GenerationSuggestionsResponse {
-  generationId: GenerationRow['id'];
+  generationId: GenerationRow["id"];
   flashcardsSuggestions: FlashcardSuggestion[];
   generationCount: number;
 }
 
 export type GenerationSuggestionsResponseDto = GenerationSuggestionsResponse;
 
-export interface GenerationSummaryDTO extends Simplify<
-  Pick<GenerationRow, 'id' | 'model'> & {
-    sourceTextLength: GenerationRow['source_text_length'];
-    suggestionsCount: GenerationRow['suggestions_count'];
-    acceptedUneditedCount: GenerationRow['accepted_unedited_count'];
-    acceptedEditedCount: GenerationRow['accepted_edited_count'];
-    rejectedCount: GenerationRow['rejected_count'];
-    generationDurationMs: GenerationRow['generation_duration_ms'];
-    createdAt: GenerationRow['created_at'];
-  }
-> {}
+export interface GenerationSummaryDTO
+  extends Simplify<
+    Pick<GenerationRow, "id" | "model"> & {
+      sourceTextLength: GenerationRow["source_text_length"];
+      suggestionsCount: GenerationRow["suggestions_count"];
+      acceptedUneditedCount: GenerationRow["accepted_unedited_count"];
+      acceptedEditedCount: GenerationRow["accepted_edited_count"];
+      rejectedCount: GenerationRow["rejected_count"];
+      generationDurationMs: GenerationRow["generation_duration_ms"];
+      createdAt: GenerationRow["created_at"];
+    }
+  > {}
 
 // In the current API plan, detail payload mirrors the summary fields 1-to-1.
 export type GenerationDetailDTO = GenerationSummaryDTO;
@@ -163,14 +163,15 @@ export interface GenerationStatsDTO {
 // Generation Error Logs
 // ----------------------------------------------------------------------------------
 
-export interface GenerationErrorLogDTO extends Simplify<
-  Pick<GenerationErrorLogRow, 'id' | 'model'> & {
-    errorMessage: GenerationErrorLogRow['error_message'];
-    errorContext: GenerationErrorLogRow['error_context'];
-    sourceTextLength: GenerationErrorLogRow['source_text_length'];
-    createdAt: GenerationErrorLogRow['created_at'];
-  }
-> {}
+export interface GenerationErrorLogDTO
+  extends Simplify<
+    Pick<GenerationErrorLogRow, "id" | "model"> & {
+      errorMessage: GenerationErrorLogRow["error_message"];
+      errorContext: GenerationErrorLogRow["error_context"];
+      sourceTextLength: GenerationErrorLogRow["source_text_length"];
+      createdAt: GenerationErrorLogRow["created_at"];
+    }
+  > {}
 
 export type GenerationErrorLogsListResponse = PaginatedResponse<GenerationErrorLogDTO>;
 
@@ -182,4 +183,4 @@ export type GenerationErrorLogDetailDTO = GenerationErrorLogDTO;
 // ----------------------------------------------------------------------------------
 
 // Re-export Json for convenience in downstream code.
-export type { Json }; 
+export type { Json };

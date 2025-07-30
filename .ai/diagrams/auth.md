@@ -1,5 +1,5 @@
 sequenceDiagram
-    autonumber
+autonumber
 
     participant Browser
     participant Middleware
@@ -56,4 +56,4 @@ sequenceDiagram
     Supabase Auth-->>Astro API: Sesja unieważniona
     deactivate Supabase Auth
     Astro API-->>Browser: Odpowiedź (Clear-Cookie) i przekierowanie
-    deactivate Astro API 
+    deactivate Astro API

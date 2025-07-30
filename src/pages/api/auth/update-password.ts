@@ -10,13 +10,22 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const result = updatePasswordSchema.safeParse(body);
 
     if (!result.success) {
-      return new Response(JSON.stringify({ error: "Invalid data", details: result.error.flatten() }), {
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Invalid data",
+          details: result.error.flatten(),
+        }),
+        {
+          status: 400,
+        }
+      );
     }
 
     const { password } = result.data;
-    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+    const supabase = createSupabaseServerInstance({
+      cookies,
+      headers: request.headers,
+    });
 
     // Supabase client exchanges the code for a session in the background
     const { error } = await supabase.auth.updateUser({ password });

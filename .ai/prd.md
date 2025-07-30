@@ -64,6 +64,9 @@ Kryteria akceptacji:
 - Po podaniu prawidłowych danych logowania użytkownik zostaje przekierowany do widoku generowania fiszek.
 - Błędne dane logowania wyświetlają komunikat o nieprawidłowych danych.
 - Dane dotyczące logowania przechowywane są w bezpieczny sposób.
+- Tylko zarejestrowani użytkownicy mogą generować fiszki.
+- Użytkownik który nie jest zarejestrowany ma dostęp do opcji logowania i rejestracji oraz zmiany hasła
+- Możliwa jest opcja zmiany hasła
 
 ID: US-003
 Tytuł: Generowanie fiszek przy użyciu AI
@@ -121,6 +124,13 @@ Opis: Jako zalogowany użytkownik chcę mieć pewność, że moje fiszki nie są
 Kryteria akceptacji:
 - Tylko zalogowany użytkownik może wyświetlać, edytować i usuwać swoje fiszki.
 - Nie ma dostępu do fiszek innych użytkowników ani możliwości współdzielenia.
+- Logowanie i rejestracja są dostępne dla wszystkich użytkowników, na dedykowanych stronach
+- logowanie wymaga podania adresu e-mail i hasła
+- rejestracja wymaga podania adresu e-mail i hasła oraz potwierdzenia hasła
+- nie korzystamy z zewnętrznych serwisów do logowania (Google, Facebook, GitHub itp.)
+- odzyskiwanie hasła powinno być możliwe poprzez wysłanie e-maila z linkiem do resetowania hasła
+- logowanie poprzez przycisk w prawym górnym rogu strony
+- wylogowanie poprzez przycisk w prawym górnym rogu strony
 
 ## 6. Metryki sukcesu
 1. Efektywność generowania fiszek:

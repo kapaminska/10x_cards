@@ -10,9 +10,15 @@ export const POST: APIRoute = async ({ request, url, cookies }) => {
     const result = resetPasswordSchema.safeParse(body);
 
     if (!result.success) {
-      return new Response(JSON.stringify({ error: "Invalid data", details: result.error.flatten() }), {
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Invalid data",
+          details: result.error.flatten(),
+        }),
+        {
+          status: 400,
+        }
+      );
     }
 
     const { email } = result.data;

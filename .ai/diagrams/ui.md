@@ -1,12 +1,12 @@
 flowchart TD
-    subgraph "Aplikacja (Przeglądarka)"
-        direction LR
-        subgraph "Strony Publiczne"
-            direction TB
-            LoginPage["Strona /login"]
-            RegisterPage["Strona /register"]
-            ResetPasswordPage["Strona /reset-password"]
-        end
+subgraph "Aplikacja (Przeglądarka)"
+direction LR
+subgraph "Strony Publiczne"
+direction TB
+LoginPage["Strona /login"]
+RegisterPage["Strona /register"]
+ResetPasswordPage["Strona /reset-password"]
+end
 
         subgraph "Komponenty UI (React)"
             direction TB
@@ -14,7 +14,7 @@ flowchart TD
             RegisterForm["Komponent RegisterForm.tsx"]
             ResetPasswordForm["Komponent ResetPasswordForm.tsx"]
         end
-        
+
         subgraph "Chronione Strony Użytkownika"
             direction TB
             GeneratePage["Strona /generate"]
@@ -59,7 +59,7 @@ flowchart TD
     User -- "Nawiguje do /login" --> LoginPage
     User -- "Wypełnia formularz" --> LoginForm
     LoginForm -- "POST z danymi<br/>(email, hasło)" --> ApiLogin
-    
+
     User -- "Nawiguje do /register" --> RegisterPage
     User -- "Wypełnia formularz" --> RegisterForm
     RegisterForm -- "POST z danymi" --> ApiRegister
@@ -73,14 +73,14 @@ flowchart TD
     ApiLogout -- "signOut()" --> SupabaseAuth
 
     SupabaseAuth -- "Ustawia cookies sesyjne" --> User
-    
+
     User -- "Próba dostępu<br/>do /generate" --> Middleware
     Middleware -- "Sprawdza cookies" --> SupabaseAuth
     Middleware -- "Brak sesji? Przekieruj<br/>do /login" --> LoginPage
     Middleware -- "Jest sesja? Renderuj" --> GeneratePage
-    
+
     Layout -- "Odczytuje Astro.locals.session<br/>(dostarczone przez Middleware)" --> Topbar
     Topbar -- "Użytkownik zalogowany" --> DisplayLogout["Wyświetl 'Wyloguj' i linki"]
     Topbar -- "Użytkownik niezalogowany" --> DisplayLogin["Wyświetl 'Zaloguj się'"]
 
-    classDef updated fill:#ffe_6,stroke:#333,stroke-width:2px; 
+    classDef updated fill:#ffe_6,stroke:#333,stroke-width:2px;

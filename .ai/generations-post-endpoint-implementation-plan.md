@@ -1,9 +1,11 @@
 # API Endpoint Implementation Plan: POST /generations
 
 ## 1. Przegląd punktu końcowego
+
 Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyjmuje tekst źródłowy od użytkownika, przetwarza go, wywołuje zewnętrzną usługę LLM w celu uzyskania propozycji fiszek, a następnie zwraca je do klienta. Każde wywołanie jest logowane w tabeli `generations`, a ewentualne błędy w tabeli `generation_error_logs`. Endpoint musi być zabezpieczony i dostępny tylko dla uwierzytelnionych użytkowników.
 
 ## 2. Szczegóły żądania
+
 - **Metoda HTTP**: `POST`
 - **Struktura URL**: `/api/generations`
 - **Parametry**:
@@ -17,6 +19,7 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
   ```
 
 ## 3. Wykorzystywane typy
+
 - **Request Command Model**: `GenerateFlashcardsCommand` (`{ sourceText: string }`) z `src/types.ts`.
 - **Request Command Model**: `CreateGenerationCommand` (`{ sourceText: string }`) z `src/types.ts`.
 - **Response DTO**: `GenerationSuggestionsResponseDto` (`{ generationId: string, flashcardsSuggestions: FlashcardSuggestionDto[] }`) z `src/types.ts`.
@@ -24,6 +27,7 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
 - **DTO**: FlashcardSuggestionDto: `{ front: string, back: string, source: 'ai-full' }`.
 
 ## 4. Szczegóły odpowiedzi
+
 - **Success (200 OK)**:
   - Zwraca obiekt `GenerationSuggestionsResponseDto`.
   ```json
@@ -42,6 +46,7 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
 - **Error**: Zobacz sekcję "Obsługa błędów".
 
 ## 5. Przepływ danych
+
 1.  Klient wysyła żądanie `POST` na `/api/generations` z `sourceText` w ciele żądania.
 2.  Astro middleware weryfikuje token JWT użytkownika. Jeśli jest nieprawidłowy, zwraca `401 Unauthorized`.
 3.  Endpoint API w `src/pages/api/generations/index.ts` jest wywoływany.
@@ -64,27 +69,31 @@ Ten punkt końcowy inicjuje proces generowania fiszek wspomagany przez AI. Przyj
     - Kontroler odbiera DTO z serwisu i wysyła je do klienta z kodem statusu `200 OK`.
 
 ## 6. Względy bezpieczeństwa
+
 - **Uwierzytelnianie**: Wszystkie żądania do tego endpointu muszą zawierać prawidłowy token `Authorization: Bearer`. Użycie `Astro.locals.supabase` do weryfikacji sesji i pobrania danych użytkownika jest obligatoryjne.
 - **Autoryzacja**: Każdy uwierzytelniony użytkownik może korzystać z tej funkcji. Dostęp jest powiązany z jego `user_id`.
 - **Walidacja danych wejściowych**: Stosowanie `zod` na poziomie kontrolera i dodatkowych sprawdzeń w serwisie chroni przed nieprawidłowymi danymi i potencjalnymi atakami.
 - **Rate Limiting**: Należy zaimplementować mechanizm ograniczający liczbę żądań na użytkownika (np. 10 generacji na godzinę), aby zapobiec nadużyciom i kontrolować koszty API.
 
 ## 7. Obsługa błędów
-| Kod Statusu | Nazwa Błędu | Opis | Akcja |
-| :--- | :--- | :--- | :--- |
-| `400` | `Bad Request` | Brak `sourceText`, nieprawidłowy typ danych, lub długość tekstu poza zakresem 1000-10000 znaków. | Zwrócenie komunikatu o błędzie walidacji. |
-| `401` | `Unauthorized` | Brak lub nieprawidłowy token uwierzytelniający. | Zwrócenie standardowego komunikatu o braku autoryzacji. |
-| `429` | `Too Many Requests`| Użytkownik przekroczył limit szybkości generowania. | Zwrócenie komunikatu z informacją, kiedy będzie mógł spróbować ponownie. |
-| `500` | `AI Service Error` | Problem z komunikacją z usługą LLM (np. timeout, błąd sieciowy). | Zalogowanie błędu w `generation_error_logs`. Zwrócenie generycznego komunikatu. |
-| `502` | `Bad Gateway` | Usługa LLM zwróciła wewnętrzny błąd (status 5xx). | Zalogowanie błędu w `generation_error_logs`. Zwrócenie generycznego komunikatu. |
+
+| Kod Statusu | Nazwa Błędu         | Opis                                                                                             | Akcja                                                                           |
+| :---------- | :------------------ | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------ |
+| `400`       | `Bad Request`       | Brak `sourceText`, nieprawidłowy typ danych, lub długość tekstu poza zakresem 1000-10000 znaków. | Zwrócenie komunikatu o błędzie walidacji.                                       |
+| `401`       | `Unauthorized`      | Brak lub nieprawidłowy token uwierzytelniający.                                                  | Zwrócenie standardowego komunikatu o braku autoryzacji.                         |
+| `429`       | `Too Many Requests` | Użytkownik przekroczył limit szybkości generowania.                                              | Zwrócenie komunikatu z informacją, kiedy będzie mógł spróbować ponownie.        |
+| `500`       | `AI Service Error`  | Problem z komunikacją z usługą LLM (np. timeout, błąd sieciowy).                                 | Zalogowanie błędu w `generation_error_logs`. Zwrócenie generycznego komunikatu. |
+| `502`       | `Bad Gateway`       | Usługa LLM zwróciła wewnętrzny błąd (status 5xx).                                                | Zalogowanie błędu w `generation_error_logs`. Zwrócenie generycznego komunikatu. |
 
 ## 8. Rozważania dotyczące wydajności:
+
 - **Timeout dla wywołania LLM**: 60 sekund.
 - **Asynchroniczność**: Rozważyć asynchroniczne wywołanie LLM.
 - **Hashowanie**: Obliczanie hasha SHA-256 jest szybką operacją i służy do celów przechowywania.
 - **Zapytania do bazy danych**: Zapytania powinny być zoptymalizowane przez odpowiednie indeksy.
 
 ## 9. Etapy wdrożenia
+
 1.  **Struktura plików**:
     - Utwórz plik dla endpointu: `src/pages/api/generations/index.ts`.
     - Utwórz plik dla serwisu: `src/lib/services/generation.service.ts`.

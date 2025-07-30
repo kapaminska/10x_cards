@@ -10,14 +10,23 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const result = registerSchema.safeParse(body);
 
     if (!result.success) {
-      return new Response(JSON.stringify({ error: "Invalid data", details: result.error.flatten() }), {
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Invalid data",
+          details: result.error.flatten(),
+        }),
+        {
+          status: 400,
+        }
+      );
     }
 
     const { email, password } = result.data;
 
-    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+    const supabase = createSupabaseServerInstance({
+      cookies,
+      headers: request.headers,
+    });
 
     const { data, error } = await supabase.auth.signUp({
       email,

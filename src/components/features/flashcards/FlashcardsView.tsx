@@ -40,7 +40,10 @@ const FlashcardsView = () => {
     mode: "create",
     isSubmitting: false,
   });
-  const [deleteState, setDeleteState] = useState<DeleteConfirmationState>({ isOpen: false, isConfirming: false });
+  const [deleteState, setDeleteState] = useState<DeleteConfirmationState>({
+    isOpen: false,
+    isConfirming: false,
+  });
 
   useEffect(() => {
     fetchFlashcards();
@@ -51,7 +54,12 @@ const FlashcardsView = () => {
   };
 
   const handleOpenEditModal = (flashcard: FlashcardDTO) => {
-    setFormState({ isOpen: true, mode: "edit", isSubmitting: false, initialData: flashcard });
+    setFormState({
+      isOpen: true,
+      mode: "edit",
+      isSubmitting: false,
+      initialData: flashcard,
+    });
   };
 
   const handleOpenDeleteDialog = (flashcardId: string) => {

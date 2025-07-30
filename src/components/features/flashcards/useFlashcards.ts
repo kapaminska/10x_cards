@@ -48,7 +48,11 @@ const useFlashcards = () => {
         isLoading: false,
       }));
     } catch (error) {
-      setState((s) => ({ ...s, isLoading: false, error: (error as Error).message }));
+      setState((s) => ({
+        ...s,
+        isLoading: false,
+        error: (error as Error).message,
+      }));
     }
   }, [state.pagination.page, state.pagination.limit, state.sorting.sortBy, state.filters.source]);
 
@@ -96,10 +100,18 @@ const useFlashcards = () => {
   };
 
   const setFilters = (filters: { source: FlashcardSource | "all" }) => {
-    setState((s) => ({ ...s, filters, pagination: { ...s.pagination, page: 1 } }));
+    setState((s) => ({
+      ...s,
+      filters,
+      pagination: { ...s.pagination, page: 1 },
+    }));
   };
   const setSorting = (sorting: { sortBy: "created_at" | "updated_at" }) => {
-    setState((s) => ({ ...s, sorting, pagination: { ...s.pagination, page: 1 } }));
+    setState((s) => ({
+      ...s,
+      sorting,
+      pagination: { ...s.pagination, page: 1 },
+    }));
   };
   const setPage = (page: number) => {
     setState((s) => ({ ...s, pagination: { ...s.pagination, page } }));

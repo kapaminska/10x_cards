@@ -1,16 +1,20 @@
 # API Endpoint Implementation Plan: POST /flashcards
 
 ## 1. Przegląd punktu końcowego
+
 Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dla uwierzytelnionego użytkownika. Obsługuje dwa odrębne przypadki użycia:
+
 1.  **Tworzenie ręczne**: Użytkownik przesyła pojedynczy obiekt fiszki. Pole `source` jest opcjonalne i domyślnie ustawiane na 'manual', a `generation_id` jest pomijane.
 2.  **Tworzenie wsadowe (AI)**: Po sesji generowania propozycji fiszek przez AI, klient przesyła tablicę zaakceptowanych fiszek (zarówno edytowanych, jak i nieedytowanych). Każda fiszka musi zawierać `source` ('ai-full' lub 'ai-edited') oraz powiązany `generation_id`.
 
 ## 2. Szczegóły żądania
+
 - **Metoda HTTP**: `POST`
 - **Struktura URL**: `/api/flashcards`
 - **Request Body**: Ciało żądania musi pasować do jednego z dwóch poniższych schematów walidowanych przez Zod.
 
   **Schemat 1: Pojedyncza fiszka (ręczna lub AI)**
+
   ```json
   {
     "front": "What is Zod?",
@@ -21,6 +25,7 @@ Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dl
 
   **Schemat 2: Wiele fiszek (wsadowe AI)**
   Zgodnie z typem `CreateFlashcardsBatchCommand` z `src/types.ts`.
+
   ```json
   {
     "generationId": "a1b2c3d4-e5f6-4a3b-8c7d-1e2f3a4b5c6d",
@@ -45,6 +50,7 @@ Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dl
   - Dla schematu 2 (`CreateFlashcardsBatchCommand`): `generationId`, `acceptedCards` (tablica z określonymi polami) i `rejectedCount` są wymagane.
 
 ## 3. Wykorzystywane typy
+
 - **Request Body Validation**: Niestandardowy schemat Zod, który wykorzystuje `z.union`, aby obsłużyć oba formaty żądania (`FlashcardCreateDto` | `CreateFlashcardsBatchCommand`).
 - **DTOs (z `src/types.ts`)**:
   - `FlashcardCreateDto`: Schemat walidacji dla pojedynczej fiszki.
@@ -52,6 +58,7 @@ Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dl
   - `FlashcardDTO`: Używany do formatowania danych wyjściowych w odpowiedzi.
 
 ## 4. Szczegóły odpowiedzi
+
 - **Odpowiedź sukcesu (`201 Created`)**: Zwraca obiekt zawierający tablicę nowo utworzonych fiszek.
   ```json
   {
@@ -71,6 +78,7 @@ Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dl
 - **Odpowiedzi błędu**: Zobacz sekcję "Obsługa błędów".
 
 ## 5. Przepływ danych
+
 1.  Żądanie `POST` trafia do pliku trasy Astro `src/pages/api/flashcards.ts`.
 2.  Astro middleware weryfikuje token JWT użytkownika i udostępnia klienta Supabase oraz dane użytkownika w `Astro.locals`.
 3.  Handler `POST` w pliku trasy jest wywoływany.
@@ -90,11 +98,13 @@ Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dl
 9.  Handler Astro formatuje zwrócone dane do postaci `{ flashcards: FlashcardDTO[] }` i wysyła odpowiedź `201 Created`.
 
 ## 6. Względy bezpieczeństwa
+
 - **Uwierzytelnianie**: Każde żądanie musi być uwierzytelnione za pomocą ważnego tokenu JWT. Middleware jest odpowiedzialne за weryfikację i odrzucenie nieautoryzowanych żądań (`401 Unauthorized`).
 - **Autoryzacja**: Logika serwisu musi zapewnić, że `generation_id` (jeśli podano) należy do uwierzytelnionego użytkownika, aby zapobiec tworzeniu przez jednego użytkownika fiszek w kontekście generacji innego użytkownika.
 - **Walidacja danych wejściowych**: Rygorystyczna walidacja za pomocą Zod na brzegu (w handlerze Astro) chroni przed nieprawidłowymi lub złośliwymi danymi, zanim dotrą one do logiki biznesowej.
 
 ## 7. Obsługa błędów
+
 - **`400 Bad Request`**: Zwracany, gdy walidacja Zod schematu ciała żądania nie powiedzie się. Odpowiedź powinna zawierać szczegóły błędu walidacji.
 - **`401 Unauthorized`**: Zwracany przez middleware, gdy brakuje tokenu uwierzytelniającego lub jest on nieważny.
 - **`404 Not Found`**: Zwracany, gdy podano `generationId`, który nie istnieje lub nie należy do bieżącego użytkownika.
@@ -102,10 +112,12 @@ Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dl
 - **`500 Internal Server Error`**: Zwracany w przypadku nieoczekiwanego błędu serwera, np. błędu zapisu do bazy danych.
 
 ## 8. Rozważania dotyczące wydajności
+
 - **Operacje wsadowe**: Użycie pojedynczego wywołania `insert()` dla wielu fiszek jest znacznie bardziej wydajne niż wykonywanie wielu oddzielnych zapytań do bazy danych. Architektura wspiera to podejście.
 - **Zapytania walidacyjne**: Walidacja `generationId` wymaga dodatkowego zapytania do bazy danych. Należy zoptymalizować to zapytanie, aby było jak najszybsze (np. pobierając tylko `id` i `user_id`).
 
 ## 9. Etapy wdrożenia
+
 1.  **Plik trasy**: Utwórz plik `src/pages/api/flashcards.ts`.
 2.  **Schemat walidacji**: W `flashcards.ts`, zdefiniuj schemat walidacji Zod, który obsługuje zarówno pojedyncze, jak i wsadowe tworzenie fiszek, w tym walidację warunkową dla `generationId` i `source`.
 3.  **Handler POST**: W `flashcards.ts`, zaimplementuj funkcję `POST({ request, locals })`.
@@ -120,4 +132,4 @@ Ten punkt końcowy jest odpowiedzialny za tworzenie jednej lub więcej fiszek dl
     - Zwróć utworzone fiszki lub rzuć odpowiedni błąd.
 6.  **Integracja**: Wywołaj metodę serwisu z handlera `POST` w `flashcards.ts`.
 7.  **Obsługa odpowiedzi**: W handlerze `POST`, opakuj pomyślne wyniki w odpowiedź `201 Created` i obsłuż błędy zgłoszone przez serwis, mapując je na odpowiednie kody stanu HTTP.
-8.  **Testowanie**: Napisz testy jednostkowe dla logiki serwisu (zwłaszcza walidacji `generationId`) oraz testy integracyjne dla całego punktu końcowego. 
+8.  **Testowanie**: Napisz testy jednostkowe dla logiki serwisu (zwłaszcza walidacji `generationId`) oraz testy integracyjne dla całego punktu końcowego.

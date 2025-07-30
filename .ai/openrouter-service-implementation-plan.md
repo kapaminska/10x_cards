@@ -21,7 +21,7 @@ import {
   AuthenticationError,
   RateLimitError,
   BadRequestError,
-  OutputValidationError
+  OutputValidationError,
 } from "@/lib/errors";
 
 interface OpenRouterServiceConfig {
@@ -59,18 +59,18 @@ export class OpenRouterService {
 
 Główna metoda usługi, która wysyła zapytanie do modelu i oczekuje odpowiedzi zgodnej z podanym schematem Zod.
 
--   **`prompt`**: Główne zapytanie użytkownika.
--   **`schema`**: Schemat Zod definiujący oczekiwaną strukturę odpowiedzi JSON.
--   **`systemPrompt`**: (Opcjonalny) Komunikat systemowy do ustawienia kontekstu dla modelu.
--   **Zwraca**: Obiekt `Promise`, który po rozwiązaniu zawiera odpowiedź sparsowaną i zwalidowaną zgodnie ze schematem.
+- **`prompt`**: Główne zapytanie użytkownika.
+- **`schema`**: Schemat Zod definiujący oczekiwaną strukturę odpowiedzi JSON.
+- **`systemPrompt`**: (Opcjonalny) Komunikat systemowy do ustawienia kontekstu dla modelu.
+- **Zwraca**: Obiekt `Promise`, który po rozwiązaniu zawiera odpowiedź sparsowaną i zwalidowaną zgodnie ze schematem.
 
 ### `getResponse(prompt: string, systemPrompt?: string): Promise<string>`
 
 Prostsza metoda do uzyskiwania odpowiedzi tekstowych bez narzuconej struktury.
 
--   **`prompt`**: Główne zapytanie użytkownika.
--   **`systemPrompt`**: (Opcjonalny) Komunikat systemowy.
--   **Zwraca**: `Promise` z tekstową odpowiedzią modelu.
+- **`prompt`**: Główne zapytanie użytkownika.
+- **`systemPrompt`**: (Opcjonalny) Komunikat systemowy.
+- **Zwraca**: `Promise` z tekstową odpowiedzią modelu.
 
 ## 4. Prywatne metody i pola
 
@@ -78,16 +78,16 @@ Prostsza metoda do uzyskiwania odpowiedzi tekstowych bez narzuconej struktury.
 
 Prywatna metoda do centralizacji obsługi błędów. Mapuje błędy z biblioteki Langchain na niestandardowe, zdefiniowane w aplikacji typy błędów.
 
--   **`error`**: Przechwycony obiekt błędu.
--   **Zwraca**: `never` - metoda zawsze rzuca błąd.
+- **`error`**: Przechwycony obiekt błędu.
+- **Zwraca**: `never` - metoda zawsze rzuca błąd.
 
 ### `private buildMessages(prompt: string, systemPrompt?: string): BaseMessage[]`
 
 Metoda pomocnicza do tworzenia tablicy wiadomości (`SystemMessage`, `HumanMessage`) w formacie wymaganym przez Langchain.
 
--   **`prompt`**: Zapytanie użytkownika.
--   **`systemPrompt`**: Komunikat systemowy.
--   **Zwraca**: Tablica instancji `BaseMessage`.
+- **`prompt`**: Zapytanie użytkownika.
+- **`systemPrompt`**: Komunikat systemowy.
+- **Zwraca**: Tablica instancji `BaseMessage`.
 
 ## 5. Obsługa błędów
 
@@ -107,9 +107,12 @@ export class AuthenticationError extends OpenRouterError {}
 export class RateLimitError extends OpenRouterError {}
 export class BadRequestError extends OpenRouterError {}
 export class OutputValidationError extends OpenRouterError {
-    constructor(message: string, public readonly originalError?: Error) {
-        super(message);
-    }
+  constructor(
+    message: string,
+    public readonly originalError?: Error
+  ) {
+    super(message);
+  }
 }
 ```
 
@@ -175,7 +178,7 @@ import {
   AuthenticationError,
   RateLimitError,
   BadRequestError,
-  OutputValidationError
+  OutputValidationError,
 } from "@/lib/errors";
 
 // ... Interfejs OpenRouterServiceConfig ...
@@ -249,7 +252,8 @@ export const POST: APIRoute = async ({ request }) => {
 
   const openRouterService = new OpenRouterService();
   const prompt = `Wygeneruj ${count} unikalnych fiszek na temat: "${topic}".`;
-  const systemPrompt = "Jesteś ekspertem w tworzeniu zwięzłych i ciekawych fiszek edukacyjnych. Zawsze odpowiadaj w formacie JSON, zgodnie z podanym schematem.";
+  const systemPrompt =
+    "Jesteś ekspertem w tworzeniu zwięzłych i ciekawych fiszek edukacyjnych. Zawsze odpowiadaj w formacie JSON, zgodnie z podanym schematem.";
 
   try {
     const generatedFlashcards = await openRouterService.getStructuredResponse(
@@ -260,7 +264,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     return new Response(JSON.stringify(generatedFlashcards), {
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     // Tutaj można zalogować błąd
@@ -273,7 +277,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 ### Wyjaśnienie konfiguracji kluczowych funkcji
 
--   **Komunikat systemowy (`systemPrompt`)**: Przekazywany jako opcjonalny argument do metod usługi, jest konwertowany na `SystemMessage` z Langchain, aby nadać modelowi odpowiedni kontekst lub osobowość.
--   **Komunikat użytkownika (`prompt`)**: Główny argument metod, konwertowany na `HumanMessage`, reprezentujący bezpośrednie zapytanie.
--   **Nazwa modelu i parametry**: Konfigurowane w konstruktorze `OpenRouterService`. Pozwala to na stworzenie wielu instancji usługi z różnymi modelami (np. jedna dla szybkiej generacji, inna dla analizy) lub na dynamiczne tworzenie instancji z modelem wybranym przez użytkownika.
--   **`response_format` (schemat JSON)**: To jest kluczowa funkcjonalność. Zamiast ręcznie tworzyć skomplikowany obiekt `response_format`, wykorzystujemy metodę `withStructuredOutput(schema)` z Langchain. Przyjmuje ona schemat Zod, a Langchain automatycznie instruuje model (za pomocą `JSON Mode` lub `Tool Calling`), aby jego odpowiedź była zgodna ze strukturą tego schematu. Jest to nowoczesne, elastyczne i zalecane podejście, które abstrahuje od specyfiki implementacji danego modelu. Wynik jest automatycznie parsowany i walidowany, co znacznie upraszcza kod. 
+- **Komunikat systemowy (`systemPrompt`)**: Przekazywany jako opcjonalny argument do metod usługi, jest konwertowany na `SystemMessage` z Langchain, aby nadać modelowi odpowiedni kontekst lub osobowość.
+- **Komunikat użytkownika (`prompt`)**: Główny argument metod, konwertowany na `HumanMessage`, reprezentujący bezpośrednie zapytanie.
+- **Nazwa modelu i parametry**: Konfigurowane w konstruktorze `OpenRouterService`. Pozwala to na stworzenie wielu instancji usługi z różnymi modelami (np. jedna dla szybkiej generacji, inna dla analizy) lub na dynamiczne tworzenie instancji z modelem wybranym przez użytkownika.
+- **`response_format` (schemat JSON)**: To jest kluczowa funkcjonalność. Zamiast ręcznie tworzyć skomplikowany obiekt `response_format`, wykorzystujemy metodę `withStructuredOutput(schema)` z Langchain. Przyjmuje ona schemat Zod, a Langchain automatycznie instruuje model (za pomocą `JSON Mode` lub `Tool Calling`), aby jego odpowiedź była zgodna ze strukturą tego schematu. Jest to nowoczesne, elastyczne i zalecane podejście, które abstrahuje od specyfiki implementacji danego modelu. Wynik jest automatycznie parsowany i walidowany, co znacznie upraszcza kod.
