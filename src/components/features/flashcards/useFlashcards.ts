@@ -8,7 +8,7 @@ const useFlashcards = () => {
     flashcards: [],
     pagination: {
       page: 1,
-      limit: 10,
+      limit: 9,
       totalItems: 0,
       totalPages: 1,
     },

@@ -2,6 +2,7 @@ import type { FlashcardDTO } from "@/types";
 import { Button } from "@/components/hig/Button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/hig/Card";
 import { format } from "date-fns";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface FlashcardListItemProps {
   flashcard: FlashcardDTO;
@@ -10,25 +11,27 @@ interface FlashcardListItemProps {
 }
 
 const FlashcardListItem = ({ flashcard, onEdit, onDelete }: FlashcardListItemProps) => {
-  const formattedDate = flashcard.createdAt ? format(flashcard.createdAt, "dd.MM.yyyy") : "Brak daty";
+  const formattedDate = flashcard.createdAt ? format(new Date(flashcard.createdAt), "dd.MM.yyyy") : "Brak daty";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{flashcard.front}</CardTitle>
-        <CardDescription>
+    <Card className="flex flex-col">
+      <CardHeader className="flex-grow">
+        <CardTitle className="text-lg font-semibold">{flashcard.front}</CardTitle>
+        <CardDescription className="text-xs">
           Źródło: {flashcard.source} | Utworzono: {formattedDate}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <p>{flashcard.back}</p>
+      <CardContent className="flex-grow">
+        <p className="text-sm text-muted-foreground">{flashcard.back}</p>
       </CardContent>
-      <CardFooter className="flex justify-end gap-2">
-        <Button variant="outline" onClick={() => onEdit(flashcard)}>
-          Edytuj
+      <CardFooter className="flex justify-end items-center gap-2 mt-auto pt-4">
+        <Button variant="ghost" size="icon" onClick={() => onEdit(flashcard)}>
+          <Pencil className="h-4 w-4" />
+          <span className="sr-only">Edytuj fiszkę</span>
         </Button>
-        <Button variant="destructive" onClick={() => onDelete(flashcard.id)}>
-          Usuń
+        <Button variant="ghost" size="icon" onClick={() => onDelete(flashcard.id)}>
+          <Trash2 className="h-4 w-4 text-red-500" />
+          <span className="sr-only">Usuń fiszkę</span>
         </Button>
       </CardFooter>
     </Card>

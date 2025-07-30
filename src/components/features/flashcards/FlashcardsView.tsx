@@ -9,6 +9,14 @@ import type { FlashcardDTO } from "@/types";
 import type { FlashcardFormData } from "@/lib/schemas/flashcard.schema";
 import { Toaster, toast } from "sonner";
 import FilterSortControls from "./FilterSortControls";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const FlashcardsView = () => {
   const {
@@ -23,6 +31,8 @@ const FlashcardsView = () => {
     deleteFlashcard,
     setFilters,
     setSorting,
+    pagination,
+    setPage,
   } = useFlashcards();
 
   const [formState, setFormState] = useState<FlashcardFormState>({
@@ -91,13 +101,13 @@ const FlashcardsView = () => {
 
       <header className="flex justify-between items-center py-4 mb-6 border-b">
         <div>
-          <h1 className="text-2xl font-semibold">Moje Fiszki</h1>
+          <h1 className="text-2xl font-semibold">MOJE FISZKI</h1>
           <p className="text-muted-foreground mt-1">Zarządzaj swoją kolekcją fiszek.</p>
         </div>
         <Button onClick={handleOpenCreateModal}>Stwórz nową fiszkę</Button>
       </header>
 
-      <div className="mb-6">
+      <div className="mb-6 flex justify-end">
         <FilterSortControls
           filterSource={filters.source || "all"}
           onFilterSourceChange={(source) => setFilters({ ...filters, source })}
@@ -114,6 +124,48 @@ const FlashcardsView = () => {
         onEdit={handleOpenEditModal}
         onDelete={handleOpenDeleteDialog}
       />
+
+      <div className="mt-6 flex justify-center">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pagination.page > 1) {
+                    setPage(pagination.page - 1);
+                  }
+                }}
+                className={pagination.page <= 1 ? "pointer-events-none text-muted-foreground" : ""}
+              />
+            </PaginationItem>
+            {Array.from({ length: pagination.totalPages }, (_, i) => (
+              <PaginationItem key={i}>
+                <PaginationLink
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setPage(i + 1);
+                  }}
+                  isActive={pagination.page === i + 1}
+                >
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (pagination.page < pagination.totalPages) {
+                    setPage(pagination.page + 1);
+                  }
+                }}
+                className={pagination.page >= pagination.totalPages ? "pointer-events-none text-muted-foreground" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
 
       <FlashcardFormModal state={formState} onClose={handleCloseModals} onSubmit={handleFormSubmit} />
       <ConfirmationDialog state={deleteState} onClose={handleCloseModals} onConfirm={handleDeleteConfirm} />

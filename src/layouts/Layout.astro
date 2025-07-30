@@ -1,11 +1,15 @@
 ---
 import "../styles/global.css";
+import { Toaster } from "../components/ui/sonner";
+import { LogoutButton } from "../components/hig/LogoutButton.tsx";
+import { LoginButton } from "../components/hig/LoginButton.tsx";
 
 interface Props {
   title?: string;
 }
 
 const { title = "10x Astro Starter" } = Astro.props;
+const { user } = Astro.locals;
 ---
 
 <!doctype html>
@@ -18,7 +22,33 @@ const { title = "10x Astro Starter" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    <header class="sticky top-0 z-10 p-4 bg-gray-100 dark:bg-gray-800">
+      <nav class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-4">
+          <a href="/" class="text-xl font-bold">10x Cards</a>
+        </div>
+        {
+          user ? (
+            <div class="flex items-center gap-4">
+              <a href="/generate" class="text-lg font-semibold">
+                Generate
+              </a>
+              <a href="/flashcards" class="text-lg font-semibold">
+                Flashcards
+              </a>
+              <span class="text-sm font-medium">{user.email}</span>
+              <LogoutButton client:load />
+            </div>
+          ) : (
+            <LoginButton client:load />
+          )
+        }
+      </nav>
+    </header>
+    <main class="h-full">
+      <slot />
+    </main>
+    <Toaster client:load />
   </body>
 </html>
 
@@ -27,6 +57,10 @@ const { title = "10x Astro Starter" } = Astro.props;
   body {
     margin: 0;
     width: 100%;
+    height: 100%;
+  }
+
+  main {
     height: 100%;
   }
 </style>

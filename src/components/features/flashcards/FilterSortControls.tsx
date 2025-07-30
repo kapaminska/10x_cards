@@ -18,14 +18,14 @@ const FilterSortControls: React.FC<FilterSortControlsProps> = ({
   onSortByChange,
 }) => {
   return (
-    <div className="flex items-center space-x-4">
-      <div>
-        <label htmlFor="filter-source" className="text-sm font-medium mr-2">
-          Źródło
+    <div className="flex items-center gap-4 text-sm">
+      <div className="flex items-center gap-2">
+        <label htmlFor="filter-source" className="text-muted-foreground">
+          Źródło:
         </label>
         <Select onValueChange={onFilterSourceChange} value={filterSource}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filtruj wg źródła" />
+          <SelectTrigger className="w-auto h-8 text-xs border-none bg-transparent shadow-none focus:ring-0">
+            <SelectValue placeholder="Wybierz" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Wszystkie</SelectItem>
@@ -36,13 +36,13 @@ const FilterSortControls: React.FC<FilterSortControlsProps> = ({
         </Select>
       </div>
 
-      <div>
-        <label htmlFor="sort-by" className="text-sm font-medium mr-2">
-          Sortuj wg
+      <div className="flex items-center gap-2">
+        <label htmlFor="sort-by" className="text-muted-foreground">
+          Sortuj:
         </label>
         <Select onValueChange={onSortByChange} value={sortBy}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sortuj wg" />
+          <SelectTrigger className="w-auto h-8 text-xs border-none bg-transparent shadow-none focus:ring-0">
+            <SelectValue placeholder="Wybierz" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="created_at">Data utworzenia</SelectItem>
