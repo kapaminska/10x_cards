@@ -3,7 +3,7 @@ import { defineConfig } from "astro/config";
 
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
-import tailwindcss from "@tailwindcss/vite";
+import tailwind from "@astrojs/tailwind";
 import node from "@astrojs/node";
 
 // https://astro.build/config
@@ -12,10 +12,7 @@ export default defineConfig({
   server: {
     port: 4321,
   },
-  integrations: [react(), sitemap()],
-  vite: {
-    plugins: [tailwindcss()],
-  },
+  integrations: [react(), sitemap(), tailwind()],
   adapter: node({
     mode: "standalone",
   }),
