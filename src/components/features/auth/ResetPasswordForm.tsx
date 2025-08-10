@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "../../hig/Input";
 import { Label } from "../../hig/Label";
 import { resetPasswordSchema } from "../../../lib/schemas/auth.schema";
+import { logger } from "../../../lib/utils";
 
 type ResetPasswordFormInputs = z.infer<typeof resetPasswordSchema>;
 
@@ -38,7 +39,7 @@ export function ResetPasswordForm() {
     } catch (error) {
       // Even if there's an error, show a generic success message.
       // Log the actual error for debugging.
-      console.error("Password reset error:", error);
+      logger.error("Password reset error:", error);
       toast.success("Jeśli konto istnieje, link do resetowania hasła został wysłany.");
     } finally {
       setIsLoading(false);

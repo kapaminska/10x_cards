@@ -17,26 +17,35 @@ interface OpenRouterServiceConfig {
 }
 
 export class OpenRouterService {
-  private client: ChatOpenAI;
+  private client: ChatOpenAI | null = null;
+  private isMock: boolean;
   public readonly DEFAULT_MODEL = "openai/gpt-4o-mini";
 
   constructor(config: OpenRouterServiceConfig = {}) {
     const apiKey = import.meta.env.OPENROUTER_API_KEY;
+    const isTest = import.meta.env.MODE === "test";
     logger.info("Attempting to load OpenRouter API Key:", apiKey ? "Key Loaded" : "Key Not Found");
 
-    if (!apiKey) {
-      throw new AuthenticationError("Brak klucza API OpenRouter. Ustaw zmienną środowiskową OPENROUTER_API_KEY.");
-    }
+    // In test mode, fall back to a mock implementation to avoid network calls
+    this.isMock = isTest && !apiKey;
 
-    this.client = new ChatOpenAI({
-      apiKey: apiKey,
-      modelName: config.modelName || this.DEFAULT_MODEL,
-      temperature: config.temperature ?? 0.7,
-      maxTokens: config.maxTokens ?? 1024,
-      configuration: {
-        baseURL: "https://openrouter.ai/api/v1",
-      },
-    });
+    if (!this.isMock) {
+      if (!apiKey) {
+        throw new AuthenticationError("Brak klucza API OpenRouter. Ustaw zmienną środowiskową OPENROUTER_API_KEY.");
+      }
+
+      this.client = new ChatOpenAI({
+        apiKey: apiKey,
+        modelName: config.modelName || this.DEFAULT_MODEL,
+        temperature: config.temperature ?? 0.7,
+        maxTokens: config.maxTokens ?? 1024,
+        configuration: {
+          baseURL: "https://openrouter.ai/api/v1",
+        },
+      });
+    } else {
+      logger.info("OpenRouterService running in mock mode for tests");
+    }
   }
 
   private buildMessages(prompt: string, systemPrompt?: string): BaseMessage[] {
@@ -65,6 +74,12 @@ export class OpenRouterService {
   }
 
   async getResponse(prompt: string, systemPrompt?: string): Promise<string> {
+    if (this.isMock) {
+      return "[MOCKED RESPONSE]";
+    }
+    if (!this.client) {
+      throw new OpenRouterError("OpenRouter client is not initialized");
+    }
     try {
       const messages = this.buildMessages(prompt, systemPrompt);
       const response = await this.client.invoke(messages);
@@ -79,6 +94,19 @@ export class OpenRouterService {
     schema: T,
     systemPrompt?: string
   ): Promise<z.infer<T>> {
+    if (this.isMock) {
+      // Produce deterministic mock matching the expected schema
+      const mock = {
+        flashcards: Array.from({ length: 6 }).map((_, i) => ({
+          front: `Mock front ${i + 1}`,
+          back: `Mock back ${i + 1}`,
+        })),
+      } as unknown as z.infer<T>;
+      return mock;
+    }
+    if (!this.client) {
+      throw new OpenRouterError("OpenRouter client is not initialized");
+    }
     try {
       const messages = this.buildMessages(prompt, systemPrompt);
       const structuredClient = this.client.withStructuredOutput(schema);

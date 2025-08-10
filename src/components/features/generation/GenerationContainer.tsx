@@ -20,6 +20,11 @@ const GenerationContainer: React.FC = () => {
     handleSaveBatch,
   } = useGenerationManager();
 
+  const [isHydrated, setIsHydrated] = React.useState(false);
+  React.useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const renderContent = () => {
     switch (apiState) {
       case "loading":
@@ -62,7 +67,7 @@ const GenerationContainer: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto" data-testid={isHydrated ? "generation-hydrated" : undefined}>
       <header className="py-4 mb-6 text-center">
         <h1 className="text-2xl font-semibold">Generator Fiszki</h1>
         <p className="text-muted-foreground mt-1">Wklej tekst, aby automatycznie wygenerować fiszki do nauki.</p>

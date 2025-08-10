@@ -36,12 +36,13 @@ const GenerationForm: React.FC<GenerationFormProps> = ({ sourceText, onTextChang
         placeholder="Wklej tutaj tekst (od 1000 do 10000 znaków), z którego wygenerujemy fiszki..."
         className="min-h-[200px] resize-y"
         maxLength={MAX_LENGTH}
+        data-testid="source-text-input"
       />
       <div className="flex items-center justify-between">
         <p className={`text-sm ${sourceText.length > MAX_LENGTH ? "text-red-500" : "text-muted-foreground"}`}>
           {sourceText.length} / {MAX_LENGTH}
         </p>
-        <Button type="submit" disabled={!isValid || isLoading}>
+        <Button type="submit" disabled={!isValid || isLoading} data-testid="generate-flashcards-button">
           {isLoading ? "Generowanie..." : "Generuj fiszki"}
         </Button>
       </div>

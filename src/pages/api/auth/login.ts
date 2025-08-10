@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { createSupabaseServerInstance } from "../../../db/supabase.client";
 import { loginSchema } from "../../../lib/schemas/auth.schema";
+import { logger } from "../../../lib/utils";
 
 export const prerender = false;
 
@@ -34,7 +35,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
 
     if (error) {
-      console.error("Error signing in:", error.message);
+      logger.error("Error signing in:", error.message);
       return new Response(JSON.stringify({ error: "Invalid credentials" }), {
         status: 401,
       });
@@ -44,7 +45,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       status: 200,
     });
   } catch (e) {
-    console.error("An unexpected error occurred:", e);
+    logger.error("An unexpected error occurred:", e);
     return new Response(JSON.stringify({ error: "An unexpected error occurred" }), {
       status: 500,
     });

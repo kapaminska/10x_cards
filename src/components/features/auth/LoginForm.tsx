@@ -60,7 +60,13 @@ export function LoginForm() {
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">E-mail</Label>
-            <Input id="email" type="email" placeholder="m@example.com" {...register("email")} />
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              {...register("email")}
+              data-testid="email-input"
+            />
             {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
           </div>
           <div className="grid gap-2">
@@ -70,10 +76,16 @@ export function LoginForm() {
                 Nie pamiętasz hasła?
               </a>
             </div>
-            <Input id="password" type="password" {...register("password")} disabled={isLoading} />
+            <Input
+              id="password"
+              type="password"
+              {...register("password")}
+              disabled={isLoading}
+              data-testid="password-input"
+            />
             {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full" disabled={isLoading} data-testid="login-button">
             {isLoading ? "Logowanie..." : "Zaloguj się"}
           </Button>
         </CardContent>

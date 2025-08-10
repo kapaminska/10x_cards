@@ -31,12 +31,16 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Wygenerowane sugestie ({suggestions.length})</h2>
-        <Button onClick={onSaveBatch} disabled={isSaving || acceptedCount === 0}>
+        <Button
+          onClick={onSaveBatch}
+          disabled={isSaving || acceptedCount === 0}
+          data-testid="save-accepted-flashcards-button"
+        >
           {isSaving ? "Zapisywanie..." : `Zapisz zaakceptowane fiszki (${acceptedCount})`}
         </Button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4" data-testid="suggestions-list">
         {suggestions.map((suggestion) => (
           <SuggestionCard
             key={suggestion.id}

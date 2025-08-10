@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
 
-test("has title", async ({ page }) => {
+test("redirects to login when unauthenticated", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page).toHaveTitle(/10x Astro Starter/);
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole("heading", { name: "Zaloguj się" })).toBeVisible();
 });
 
 test("get started link", async ({ page }) => {

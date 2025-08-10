@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { createSupabaseServerInstance } from "../../../db/supabase.client";
 import { resetPasswordSchema } from "../../../lib/schemas/auth.schema";
+import { logger } from "../../../lib/utils";
 
 export const prerender = false;
 
@@ -37,13 +38,13 @@ export const POST: APIRoute = async ({ request, url, cookies }) => {
     });
 
     if (error) {
-      console.error("Error sending password reset email:", error.message);
+      logger.error("Error sending password reset email:", error.message);
     }
 
     // Always return a success response to prevent email enumeration.
     return new Response(null, { status: 200 });
   } catch (e) {
-    console.error("An unexpected error occurred:", e);
+    logger.error("An unexpected error occurred:", e);
     return new Response(JSON.stringify({ error: "An unexpected error occurred" }), {
       status: 500,
     });

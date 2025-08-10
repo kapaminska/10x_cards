@@ -17,7 +17,7 @@ export const DEFAULT_USER_ID = "03f9de57-49ab-4e56-89b0-8511c0c59bdd";
 
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",
-  secure: true,
+  secure: import.meta.env.MODE === "production",
   httpOnly: true,
   sameSite: "lax",
 };
