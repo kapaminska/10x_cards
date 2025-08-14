@@ -42,14 +42,13 @@ export interface PaginatedResponse<T> {
 // Flashcards
 // ----------------------------------------------------------------------------------
 
-export interface FlashcardDTO
-  extends Simplify<
-    Pick<FlashcardRow, "id" | "front" | "back" | "source"> & {
-      generationId: FlashcardRow["generation_id"];
-      createdAt: FlashcardRow["created_at"];
-      updatedAt: FlashcardRow["updated_at"];
-    }
-  > {}
+export type FlashcardDTO = Simplify<
+  Pick<FlashcardRow, "id" | "front" | "back" | "source"> & {
+    generationId: FlashcardRow["generation_id"];
+    createdAt: FlashcardRow["created_at"];
+    updatedAt: FlashcardRow["updated_at"];
+  }
+>;
 
 // Create (manual) -------------------------------------------------------------------
 export interface CreateFlashcardCommand {
@@ -131,18 +130,17 @@ export interface GenerationSuggestionsResponse {
 
 export type GenerationSuggestionsResponseDto = GenerationSuggestionsResponse;
 
-export interface GenerationSummaryDTO
-  extends Simplify<
-    Pick<GenerationRow, "id" | "model"> & {
-      sourceTextLength: GenerationRow["source_text_length"];
-      suggestionsCount: GenerationRow["suggestions_count"];
-      acceptedUneditedCount: GenerationRow["accepted_unedited_count"];
-      acceptedEditedCount: GenerationRow["accepted_edited_count"];
-      rejectedCount: GenerationRow["rejected_count"];
-      generationDurationMs: GenerationRow["generation_duration_ms"];
-      createdAt: GenerationRow["created_at"];
-    }
-  > {}
+export type GenerationSummaryDTO = Simplify<
+  Pick<GenerationRow, "id" | "model"> & {
+    sourceTextLength: GenerationRow["source_text_length"];
+    suggestionsCount: GenerationRow["suggestions_count"];
+    acceptedUneditedCount: GenerationRow["accepted_unedited_count"];
+    acceptedEditedCount: GenerationRow["accepted_edited_count"];
+    rejectedCount: GenerationRow["rejected_count"];
+    generationDurationMs: GenerationRow["generation_duration_ms"];
+    createdAt: GenerationRow["created_at"];
+  }
+>;
 
 // In the current API plan, detail payload mirrors the summary fields 1-to-1.
 export type GenerationDetailDTO = GenerationSummaryDTO;
@@ -163,15 +161,14 @@ export interface GenerationStatsDTO {
 // Generation Error Logs
 // ----------------------------------------------------------------------------------
 
-export interface GenerationErrorLogDTO
-  extends Simplify<
-    Pick<GenerationErrorLogRow, "id" | "model"> & {
-      errorMessage: GenerationErrorLogRow["error_message"];
-      errorContext: GenerationErrorLogRow["error_context"];
-      sourceTextLength: GenerationErrorLogRow["source_text_length"];
-      createdAt: GenerationErrorLogRow["created_at"];
-    }
-  > {}
+export type GenerationErrorLogDTO = Simplify<
+  Pick<GenerationErrorLogRow, "id" | "model"> & {
+    errorMessage: GenerationErrorLogRow["error_message"];
+    errorContext: GenerationErrorLogRow["error_context"];
+    sourceTextLength: GenerationErrorLogRow["source_text_length"];
+    createdAt: GenerationErrorLogRow["created_at"];
+  }
+>;
 
 export type GenerationErrorLogsListResponse = PaginatedResponse<GenerationErrorLogDTO>;
 
