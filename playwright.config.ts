@@ -12,7 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:4322",
+    baseURL: "http://127.0.0.1:4322",
     trace: "on-first-retry",
   },
   projects: [
@@ -31,7 +31,7 @@ export default defineConfig({
   ],
   webServer: {
     command: "npm run dev:e2e",
-    url: "http://localhost:4322",
+    url: "http://127.0.0.1:4322",
     reuseExistingServer: !process.env.CI,
     timeout: 240 * 1000,
   },
