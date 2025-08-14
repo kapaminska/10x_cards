@@ -3,7 +3,6 @@ import { z } from "zod";
 import * as flashcardService from "../../../lib/services/flashcard.service";
 import type { CreateFlashcardsBatchCommand } from "../../../types";
 import { logger } from "@/lib/utils";
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
 
 export const prerender = false;
 
@@ -20,13 +19,12 @@ const CreateFlashcardsBatchSchema = z.object({
 });
 
 export async function POST({ request, locals }: APIContext): Promise<Response> {
-  const { supabase } = locals;
+  const { supabase, user } = locals;
   const startTime = Date.now();
 
-  const user = {
-    id: DEFAULT_USER_ID,
-    email: "test@example.com",
-  };
+  if (!user) {
+    return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+  }
 
   logger.info("[API] POST /api/flashcards/batch - Request started", {
     userId: user.id,
@@ -73,7 +71,7 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
   try {
     const { flashcards } = await flashcardService.createFlashcards(data, {
       supabase,
-      user,
+      user: { id: user.id },
     });
 
     const duration = Date.now() - startTime;

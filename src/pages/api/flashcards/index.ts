@@ -1,12 +1,16 @@
 import type { APIRoute } from "astro";
 import type { FlashcardsListResponse, FlashcardRow } from "@/types";
-import { DEFAULT_USER_ID } from "@/db/supabase.client";
 import { flashcardFormSchema } from "@/lib/schemas/flashcard.schema";
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ url, locals }) => {
-  const { supabase } = locals;
+export const GET: APIRoute = async function GET({ url, locals }) {
+  const { supabase, user } = locals;
+
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+
   const page = parseInt(url.searchParams.get("page") || "1");
   const limit = parseInt(url.searchParams.get("limit") || "10");
   const sortBy = url.searchParams.get("sort") || "created_at";
@@ -19,7 +23,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
   let query = supabase
     .from("flashcards")
     .select("*", { count: "exact" })
-    .eq("user_id", DEFAULT_USER_ID)
+    .eq("user_id", user.id)
     .order(sortBy, { ascending: order === "asc" })
     .range(from, to);
 
@@ -37,11 +41,14 @@ export const GET: APIRoute = async ({ url, locals }) => {
   }
 
   const totalItems = count || 0;
-  const totalPages = Math.ceil(totalItems / limit);
+  const totalPages = Math.ceil(totalItems / limit) || 1;
 
   const response: FlashcardsListResponse = {
     data: (data || []).map((flashcard: FlashcardRow) => ({
-      ...flashcard,
+      id: flashcard.id,
+      front: flashcard.front,
+      back: flashcard.back,
+      source: flashcard.source,
       generationId: flashcard.generation_id,
       createdAt: flashcard.created_at,
       updatedAt: flashcard.updated_at,
@@ -61,8 +68,12 @@ export const GET: APIRoute = async ({ url, locals }) => {
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const { supabase } = locals;
+  const { supabase, user } = locals;
   const formData = await request.json();
+
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
 
   const validation = flashcardFormSchema.safeParse(formData);
 
@@ -80,7 +91,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     .insert({
       front,
       back,
-      user_id: DEFAULT_USER_ID,
+      user_id: user.id,
       source: "manual",
     })
     .select()

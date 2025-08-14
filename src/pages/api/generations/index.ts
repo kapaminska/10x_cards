@@ -6,22 +6,25 @@ import {
   DatabaseError,
 } from "../../../lib/services/generation.service";
 import { createGenerationSchema } from "../../../lib/schemas/generation.schema";
-import { DEFAULT_USER_ID, supabaseClient } from "../../../db/supabase.client";
 import { logger } from "../../../lib/utils";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   logger.info(`[API] POST /api/generations - Request received`);
 
   try {
+    const { supabase, user } = locals;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
     // Parse and validate request body
     logger.info(`[API] Parsing request body`);
     let requestBody;
     try {
       requestBody = await request.json();
-    } catch (parseError) {
-      void parseError; // Suppress unused parameter warning
+    } catch {
       logger.warn(`[API] Invalid JSON in request body`);
       return new Response(
         JSON.stringify({
@@ -56,12 +59,11 @@ export const POST: APIRoute = async ({ request }) => {
     const { sourceText } = validationResult.data;
     logger.info(`[API] Request validated successfully, proceeding with generation`);
 
-    // Create service instance and generate suggestions
-    const generationService = new GenerationService(supabaseClient);
-    const result = await generationService.generateSuggestions(sourceText, DEFAULT_USER_ID);
+    // Create service instance and generate suggestions with authenticated user
+    const generationService = new GenerationService(supabase);
+    const result = await generationService.generateSuggestions(sourceText, user.id);
 
     logger.info(`[API] Generation completed successfully, returning response`);
-    // Return successful response
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -69,7 +71,6 @@ export const POST: APIRoute = async ({ request }) => {
   } catch (error) {
     logger.error("Generation endpoint error:", error);
 
-    // Handle different error types
     if (error instanceof ValidationError) {
       return new Response(
         JSON.stringify({
@@ -109,7 +110,6 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Generic error handling
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",
