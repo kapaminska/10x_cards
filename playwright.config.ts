@@ -1,7 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env.test" });
+// Only load .env.test when not in a CI environment.
+// In CI, we rely on the secrets passed via the workflow.
+if (!process.env.CI) {
+  dotenv.config({ path: ".env.test" });
+}
 
 // https://playwright.dev/docs/test-configuration
 export default defineConfig({
