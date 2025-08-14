@@ -33,7 +33,7 @@ export default defineConfig({
     command: "npm run dev:e2e",
     url: "http://localhost:4322",
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 240 * 1000,
   },
   globalTeardown: "./tests/global-teardown.ts",
 });
