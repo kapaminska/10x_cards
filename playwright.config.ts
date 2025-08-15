@@ -38,6 +38,11 @@ export default defineConfig({
     url: "http://127.0.0.1:4321",
     reuseExistingServer: !process.env.CI,
     timeout: 240 * 1000,
+    env: {
+      ...process.env,
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_KEY: process.env.SUPABASE_KEY,
+    },
   },
   globalTeardown: "./tests/global-teardown.ts",
 });
