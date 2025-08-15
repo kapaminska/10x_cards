@@ -34,17 +34,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI
-      ? `SUPABASE_URL=${process.env.SUPABASE_URL} SUPABASE_KEY=${process.env.SUPABASE_KEY} npm run dev:e2e`
-      : "npm run dev:e2e",
+    command: "npm run dev:e2e",
     url: "http://127.0.0.1:4321",
     reuseExistingServer: !process.env.CI,
     timeout: 240 * 1000,
-    env: {
-      ...process.env,
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_KEY: process.env.SUPABASE_KEY,
-    },
   },
   globalTeardown: "./tests/global-teardown.ts",
 });
