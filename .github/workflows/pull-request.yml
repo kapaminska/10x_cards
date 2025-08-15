@@ -68,11 +68,53 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
 
-      - name: Run E2E tests
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Debug CLI installation
+        run: |
+          echo "PATH: $PATH"
+          which supabase || echo "supabase not found in which"
+          ls -la /usr/local/bin/ | grep supabase || echo "not in /usr/local/bin"
+          ls -la $HOME/.local/bin/ | grep supabase || echo "not in ~/.local/bin"
+          ls -la /opt/hostedtoolcache/ | head -10 || echo "toolcache not accessible"
+
+      - name: Install Supabase CLI manually
+        run: |
+          curl -sSfL https://supabase.com/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Verify manual installation
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          which supabase
+          supabase --version
+
+      - name: Start Supabase services
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          supabase init --force
+          supabase start --ignore-health-check
+          sleep 10
+          supabase status
+
+      - name: Setup test environment
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          echo "SUPABASE_URL=http://127.0.0.1:54321" >> $GITHUB_ENV
+          echo "SUPABASE_ANON_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
+
+      - name: Run E2E tests2
         run: npm run test:e2e
         env:
+          ENV_NAME: integration
           E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Upload E2E test results
         if: always()
@@ -80,6 +122,12 @@ jobs:
         with:
           name: e2e-test-results
           path: playwright-report/
+
+      - name: Stop Supabase services
+        if: always()
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          supabase stop
 
   status-comment:
     runs-on: ubuntu-latest

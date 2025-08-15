@@ -24,7 +24,7 @@ export class GenerationPage {
   }
 
   async generateFlashcards(text: string) {
-    // Ensure hydration before interacting
+    // Ensure hydration before interacting with the page
     await expect(this.hydrationMarker).toBeVisible({ timeout: 30000 });
 
     await this.sourceTextInput.fill(text);

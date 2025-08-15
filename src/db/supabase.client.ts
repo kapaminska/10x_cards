@@ -3,8 +3,8 @@ import type { Database } from "./database.types";
 import type { AstroCookies } from "astro";
 import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL ?? import.meta.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_KEY ?? import.meta.env.SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(`Missing Supabase environment variables. Please check your .env file in the project root.

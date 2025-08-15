@@ -1,13 +1,12 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": ["src", "vitest.config.ts"],
-  "exclude": ["dist"],
+  "extends": "astro/tsconfigs/base",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["src/*"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx", "tests", "playwright-report", "test-results"]
 }
