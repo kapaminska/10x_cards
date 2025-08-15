@@ -107,7 +107,7 @@ jobs:
           echo "SUPABASE_URL=http://127.0.0.1:54321" >> $GITHUB_ENV
           echo "SUPABASE_ANON_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
 
-      - name: Run E2E tests
+      - name: Run E2E tests2
         run: npm run test:e2e
         env:
           ENV_NAME: integration
