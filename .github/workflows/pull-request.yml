@@ -71,10 +71,17 @@ jobs:
       - name: Install Supabase CLI
         run: |
           curl -sSfL https://supabase.com/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Verify Supabase CLI installation
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          supabase --version
 
       - name: Start Supabase local development
         run: |
+          export PATH="$HOME/.local/bin:$PATH"
           supabase start
           echo "SUPABASE_URL=http://127.0.0.1:54321" >> $GITHUB_ENV
           echo "SUPABASE_ANON_KEY=$(supabase status -o env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
@@ -96,7 +103,9 @@ jobs:
 
       - name: Stop Supabase
         if: always()
-        run: supabase stop
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          supabase stop
 
   status-comment:
     runs-on: ubuntu-latest
