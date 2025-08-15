@@ -3,10 +3,17 @@ import type { Database } from "./database.types";
 import type { AstroCookies } from "astro";
 import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 
-const supabaseUrl = process.env.SUPABASE_URL ?? import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_KEY ?? import.meta.env.SUPABASE_KEY;
+const supabaseUrl = import.meta.env.SUPABASE_URL ?? process.env.SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.SUPABASE_KEY ?? process.env.SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
+  console.error("Environment debug info:", {
+    "import.meta.env.SUPABASE_URL": import.meta.env.SUPABASE_URL,
+    "import.meta.env.SUPABASE_KEY": import.meta.env.SUPABASE_KEY ? "[REDACTED]" : "undefined",
+    "process.env.SUPABASE_URL": process.env.SUPABASE_URL,
+    "process.env.SUPABASE_KEY": process.env.SUPABASE_KEY ? "[REDACTED]" : "undefined",
+    "import.meta.env.MODE": import.meta.env.MODE,
+  });
   throw new Error(`Missing Supabase environment variables. Please check your .env file in the project root.
     Required variables: SUPABASE_URL, SUPABASE_KEY`);
 }

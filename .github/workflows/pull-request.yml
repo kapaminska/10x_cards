@@ -106,6 +106,14 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           echo "SUPABASE_URL=http://127.0.0.1:54321" >> $GITHUB_ENV
           echo "SUPABASE_ANON_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
+          
+          # Create .env file for Astro
+          echo "SUPABASE_URL=http://127.0.0.1:54321" > .env
+          echo "SUPABASE_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> .env
+          
+          # Also create .env.test
+          echo "SUPABASE_URL=http://127.0.0.1:54321" > .env.test
+          echo "SUPABASE_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> .env.test
 
       - name: Run E2E tests
         run: npm run test:e2e
