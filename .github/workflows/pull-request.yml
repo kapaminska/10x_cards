@@ -68,13 +68,24 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
 
+      - name: Install Supabase CLI
+        run: |
+          curl -sSfL https://supabase.com/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Start Supabase local development
+        run: |
+          supabase start
+          echo "SUPABASE_URL=http://127.0.0.1:54321" >> $GITHUB_ENV
+          echo "SUPABASE_ANON_KEY=$(supabase status -o env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
+
       - name: Run E2E tests
         run: npm run test:e2e
         env:
           E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_URL: ${{ env.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ env.SUPABASE_ANON_KEY }}
 
       - name: Upload E2E test results
         if: always()
@@ -82,6 +93,10 @@ jobs:
         with:
           name: e2e-test-results
           path: playwright-report/
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop
 
   status-comment:
     runs-on: ubuntu-latest
