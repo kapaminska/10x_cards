@@ -73,11 +73,39 @@ jobs:
         with:
           version: latest
 
-      - name: Start Supabase local development
+      - name: Debug CLI installation
         run: |
-          supabase start
+          echo "PATH: $PATH"
+          which supabase || echo "supabase not found in which"
+          ls -la /usr/local/bin/ | grep supabase || echo "not in /usr/local/bin"
+          ls -la $HOME/.local/bin/ | grep supabase || echo "not in ~/.local/bin"
+          ls -la /opt/hostedtoolcache/ | head -10 || echo "toolcache not accessible"
+
+      - name: Install Supabase CLI manually
+        run: |
+          curl -sSfL https://supabase.com/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Verify manual installation
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          which supabase
+          supabase --version
+
+      - name: Start Supabase services
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          supabase init --force
+          supabase start --ignore-health-check
+          sleep 10
+          supabase status
+
+      - name: Setup test environment
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
           echo "SUPABASE_URL=http://127.0.0.1:54321" >> $GITHUB_ENV
-          echo "SUPABASE_ANON_KEY=$(supabase status -o env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
+          echo "SUPABASE_ANON_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
 
       - name: Run E2E tests
         run: npm run test:e2e
@@ -94,9 +122,11 @@ jobs:
           name: e2e-test-results
           path: playwright-report/
 
-      - name: Stop Supabase
+      - name: Stop Supabase services
         if: always()
-        run: supabase stop
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          supabase stop
 
   status-comment:
     runs-on: ubuntu-latest
