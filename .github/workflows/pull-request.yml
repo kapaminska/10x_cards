@@ -105,7 +105,7 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           echo "SUPABASE_URL=http://127.0.0.1:54321" >> $GITHUB_ENV
-          echo "SUPABASE_ANON_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
+          echo "SUPABASE_KEY=$(supabase status --output env | grep SUPABASE_ANON_KEY | cut -d'=' -f2)" >> $GITHUB_ENV
 
       - name: Run E2E tests2
         run: npm run test:e2e
@@ -113,8 +113,10 @@ jobs:
           ENV_NAME: integration
           E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_KEY: ${{ env.SUPABASE_KEY }}
+          E2E_USERNAME_ID: test-user-id
+          CI: true
 
       - name: Upload E2E test results
         if: always()
