@@ -39,7 +39,7 @@ test.describe("Flashcard Generation from text", () => {
   test("should allow user to generate flashcards and accept top 3 suggestions", async ({ page }) => {
     // Use deterministic safe length within validation bounds (>=1000 && <=10000)
     const longText = "x".repeat(1500);
-
+    // l
     await generationPage.generateFlashcards(longText);
 
     await generationPage.suggestionsList.waitFor({ state: "visible" });

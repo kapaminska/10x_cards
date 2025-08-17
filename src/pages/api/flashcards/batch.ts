@@ -63,7 +63,7 @@ export async function POST({ request, locals }: APIContext): Promise<Response> {
     );
   }
 
-  const data: CreateFlashcardsBatchCommand = validationResult.data;
+  const data = validationResult.data as CreateFlashcardsBatchCommand;
   logger.info("[API] POST /api/flashcards/batch - Request validated successfully", {
     userId: user.id,
   });
